@@ -16,7 +16,8 @@ steps:
         - release
 
   - name: build
-    image: nas.mrcms.cn:8082/maven:3.8.6-jdk-8-slim
+    #image: nas.mrcms.cn:8082/maven:3.8.6-jdk-8-slim
+    image: bellsoft/liberica-native-image-kit-container:jdk-17-nik-23.0.9-musl
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     volumes:
       - name: mavenRep
@@ -25,7 +26,8 @@ steps:
       - echo 构建号：${DRONE_BRANCH}
       - echo "识别环境 决定资源"
       - if [ "${DRONE_BRANCH}" != "prod" ]; then echo 'prod' ;fi
-      - mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pnative
+      - chmod +x /drone/src/mvnw
+      - ./mvnw package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pnative
     branch:
       - dev
 
