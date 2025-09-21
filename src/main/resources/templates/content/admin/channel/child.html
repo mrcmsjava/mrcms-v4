@@ -1,0 +1,32 @@
+<#macro tree id node>
+	<#local temp = node + 1 />
+	<#list channels as comment>
+	  	<#if id == comment.pid>
+		<tr> 
+	      	<td align="center">${comment.id?c}</td>
+	        <td>${comment.space!}
+				<#if comment.end> └ <#else>  ├</#if>
+				<a href="${url!}${encoder('/cms?p=${comment.url!}')!}" target="_blank">${comment.name!}</a>
+			</td>
+	        <td align="left">${comment.url!}</td>
+	       
+	        <td class="text-center">${comment.sort?c}</td>
+	        <td class="text-center">
+				<#if comment.hide == true>
+					<i class="fa fa-eye pointer" onclick="channelHide(0)"></i>
+				<#else>
+					<i class="fa fa-eye-slash pointers" onclick="channelHide(1)"></i>
+				</#if>
+			</td>
+	        <td class="text-center">
+				<a href="#" action="channel/edit.do?id=${comment.id?c}" onclick="refreshContentByElement(this);">编辑</a>
+				| <a href="#" action="channel/delete.do?rid=${comment.id?c}" return="channel/list.do" onclick="deleteById(this);">删除</a>
+			</td>
+		</tr>
+	    <@tree id = comment.id node=temp/>
+      </#if>
+	</#list>
+
+
+
+</#macro>

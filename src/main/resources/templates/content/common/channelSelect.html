@@ -1,0 +1,12 @@
+<#macro channelTree id node>
+	<#local temp = node + 1 />
+	<#list channels as comment>
+	  	<#if id = comment.pid>
+	  	<option value="${comment.id?c}">
+			${comment.space!}
+			<#if comment.end > └ <#else>  ├</#if>
+			${comment.name!}</option>
+	    <@channelTree id = comment.id node=temp/>
+      	</#if>
+	</#list> 
+</#macro>

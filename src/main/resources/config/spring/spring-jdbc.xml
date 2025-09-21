@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/jee
+		http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd
+		
+		">
+
+
+    <!-- 导入配置文件 -->
+    <import resource="classpath:/config/spring/application-config.xml"/>
+
+
+    <bean id="dataSource" class="org.marker.mushroom.core.DataSourceProxy">
+        <property name="dataSource" ref="dataSource1" />
+    </bean>
+
+    <!--  druid数据源   -->
+    <bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${mushroom.db.driver}" />
+        <property name="url" value="jdbc:mysql://${mushroom.db.host}:${mushroom.db.port}/${mushroom.db.demo}?serverTimezone=UTC&amp;setUnicode=true&amp;characterEncoding=${mushroom.db.char}&amp;autoReconnect=false" />
+        <property name="username" value="${mushroom.db.user}" />
+        <property name="password" value="${mushroom.db.pass}" />
+
+        <!--maxActive: 最大连接数量 -->
+        <property name="maxActive" value="${mushroom.druid.maxActive}" />
+        <!--initialSize: 初始化连接 -->
+        <property name="initialSize" value="${mushroom.druid.initialSize}" />
+        <!-- 这里配置提交方式，默认就是TRUE，可以不用配置 -->
+        <property name="defaultAutoCommit" value="true" />
+
+        <!-- 默认值是 true ，当从连接池取连接时，验证这个连接是否有效 -->
+        <property name="testOnBorrow" value="true" />
+        <!-- 指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.注意: 设置为true后如果要生效,validationQuery参数必须设置为非空字符串 -->
+        <property name="testWhileIdle" value="true" />
+        <!-- 默认值是 flase, 当从把该连接放回到连接池的时，验证这个连接是否有效 -->
+        <property name="testOnReturn" value="true" />
+        <!--用来验证从连接池取出的连接,在将连接返回给调用者之前.如果指定,则查询必须是一个SQL SELECT并且必须返回至少一行记录-->
+        <property name="validationQuery" value="SELECT 'x'" />
+        <!-- 连接池中连接可空闲的时间 单位毫秒 30分钟 -->
+        <property name="minEvictableIdleTimeMillis" value="1800000" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="10000" />
+        <!-- 间隔多久才进行一次检测，检测需要关闭的空闲连接，单位毫秒，10分钟 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="notFullTimeoutRetryCount" value="3" />
+        <property name="connectionErrorRetryAttempts" value="100" />
+        <property name="timeBetweenConnectErrorMillis" value="10000" />
+    </bean>
+
+
+
+
+
+
+
+
+    <!-- JDBC模板操作对向 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!-- 事务配置 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+    <!-- 扫描Dao -->
+    <context:component-scan base-package="org.marker.mushroom.dao.impl"/>
+
+</beans>

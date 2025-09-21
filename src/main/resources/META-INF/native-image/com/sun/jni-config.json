@@ -1,0 +1,13 @@
+[
+  {
+    "name": "com.sun.imageio.plugins.jpeg.JPEGImageWriter",
+    "methods": [
+      {"name": "writeOutputData", "parameterTypes": ["[B", "int", "int"]},
+      {"name": "warningOccurred", "parameterTypes": [ "int"]},
+      {"name": "writeMetadata", "parameterTypes": []},
+      {"name": "grabPixels", "parameterTypes": ["int"]},
+      {"name": "processImageProgress", "parameterTypes": ["float"]},
+      {"name": "warningWithMessage", "parameterTypes": [ "java.lang.String"]}
+    ]
+  }
+]

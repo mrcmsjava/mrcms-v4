@@ -1,0 +1,57 @@
+<div class="content">
+	<div class="tab_bar">
+		<ul>
+			<li class="tab_index" onclick="setTabContent(this);">URL替换</li>
+		</ul>
+		<button class="btn_tabbar" onclick="submitActionForm(this);"  >替 换</button>
+
+	</div>
+
+
+
+    <form id="myForm" action="urlreplace/submit.do"  method="post" class="form-horizontal" onsubmit="return false;">
+
+
+    <div class="tab_content">
+		<div class="tab_item tab_show">
+
+            <div style="margin: 10px;">
+                <div class="alert">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <span class="label label-warning">注意</span>
+                    URL替换是针对网站中所有的URL地址链接的替换，例如：图片、附件、等等。一般在做域名迁移的时候使用该功能。
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">原URL：</label>
+                <div class="controls">
+
+                    <input id="fromUrl"  name="fromUrl" type="text" />
+
+                    <div class="help-block">
+                        旧版网站URL地址
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">替换为：</label>
+                <div class="controls">
+                    <input id="toUrl" class="input_for_add" name="toUrl" type="text" value="${url!}" />
+                    <div class="help-block">
+                        新版网站URL地址
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+		</div>
+	</div>
+
+
+    </form>
+</div>

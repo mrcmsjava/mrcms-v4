@@ -1,0 +1,74 @@
+package org.marker.mushroom.interceptor;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.marker.mushroom.core.AppStatic;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+
+
+/**
+ * 判断是否登录，如果没有登录就重定向到/admin/login.do
+ * 
+ * 拦截路径：/admin/
+ * 
+ * @author marker
+ * 
+ * */
+@Deprecated
+public class LoginInterceptor implements HandlerInterceptor  {
+
+
+
+	@Override
+	public boolean preHandle(HttpServletRequest request,
+							 HttpServletResponse response, Object handler) throws Exception {
+		HttpSession session = request.getSession(false);
+		if(session == null){
+			loginErrorInfo(request, response);
+			return false;
+		}
+
+		String username = (String)session.getAttribute(AppStatic.WEB_APP_SESSSION_LOGINNAME);
+		if(username == null){
+			loginErrorInfo(request, response);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+	}
+
+	private void loginErrorInfo(HttpServletRequest request,
+								HttpServletResponse response) throws IOException {
+
+		PrintWriter out = response.getWriter();
+		String accept = request.getHeader("accept");
+
+		if(accept.matches(".*application/json.*")){// json数据请求
+			out.write("{\"status\":false,\"code\":\"101\",\"message\":\"当前会话失效，请重新登录系统!\"}");
+		} else {
+			// HTML页面
+			out.write("<script type='text/javascript'>window.location.href='login.do?status=timeout';</script>");
+		}
+
+		out.flush();
+		out.close();
+	}
+
+}

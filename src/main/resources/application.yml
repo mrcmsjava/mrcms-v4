@@ -1,0 +1,73 @@
+#
+# 服务器配置
+#
+server:
+  port: ${SERVER_PORT:8080}
+
+MRCMS_MYSQL_HOST: 192.168.1.6
+MRCMS_MYSQL_PORT: 3306
+MRCMS_MYSQL_DATABASE: pancha_cms
+MRCMS_MYSQL_USERNAME: pancha_cms
+MRCMS_MYSQL_PASSWORD: mfNfseXLPt3ATeFA
+SERVER_PORT: 8081
+
+spring:
+  jmx:
+    enabled: true
+  application:
+    name: mrcms
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  mvc:
+    contentnegotiation:
+      favor-path-extension: true
+    pathmatch:
+      use-suffix-pattern: true
+      use-registered-suffix-pattern: true
+    servlet:
+      load-on-startup: 2
+  main:
+    allow-bean-definition-overriding: true
+  freemarker:
+    suffix: .html
+    charset: UTF-8
+    check-template-location: true
+    template-loader-path: classpath:/templates/content/
+    settings:
+      classic_compatible=true:  # 数据库配置
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MRCMS_MYSQL_HOST:bullet-server}:${MRCMS_MYSQL_PORT:3306}/${MRCMS_MYSQL_DATABASE:db_bullet}?useUnicode=true&serverTimezone=GMT%2B8&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${MRCMS_MYSQL_USERNAME:root}
+    password: ${MRCMS_MYSQL_PASSWORD:123456}
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 200
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: MrcmsPool
+logging:
+  level:
+    root: debug
+
+
+kaptcha:
+  height: 50
+  width: 200
+  content:
+    length: 4
+    source: abcdefghjklmnopqrstuvwxyz23456789
+    space: 2
+  font:
+    color: black
+    name: Arial
+    size: 40
+  background-color:
+    from: lightGray
+    to: white
+  border:
+    enabled: true
+    color: black
+    thickness: 1

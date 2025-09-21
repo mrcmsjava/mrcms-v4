@@ -1,0 +1,87 @@
+package org.marker.mushroom.servlet;
+
+import jakarta.servlet.annotation.WebServlet;
+import org.marker.mushroom.context.ActionContext;
+import org.marker.mushroom.core.WebAPP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+
+
+/**
+ *    
+ * 【前端核心处理器】
+ * 
+ * 
+ * 前台界面的Servlet 这个Servlet主要用来将请求转到WebAPP对象中，
+ * 有核心处理类来处理前台的请求信息
+ * 
+ * @author marker
+ * 
+ * 
+ * */
+@WebServlet(name="CmsDispatcherServlet", urlPatterns={"/cms/*"})
+public class CmsDispatcherServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 6700091564520406775L;
+
+	/** 日志记录器 */ 
+	protected Logger logger =  LoggerFactory.getLogger(CmsDispatcherServlet.class);
+	
+	
+	/**
+	 * 处理请求/cms?参数=值& 
+	 * @throws IOException
+	 * */
+	public void progress(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+
+		// 线程绑定请求对象和响应对象
+		ActionContext.currentThreadBindRequestAndResponse(request, response);
+
+		// 创建应用实例(多线程模式)
+		WebAPP app = WebAPP.newInstance();
+		app.start();// 启动实例 
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		this.progress(request, response);
+	}
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		this.progress(request, response);
+	}
+
+	/**
+	 * 销毁
+	 */
+	@Override
+	public void destroy() {
+		super.destroy();
+	}
+}

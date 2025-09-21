@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+ 	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd
+
+    ">
+
+    <mvc:annotation-driven />
+	<context:annotation-config />
+    <mvc:annotation-driven />
+
+
+
+    <!-- file uplaod -->
+<!--    <bean id="multipartResolver"-->
+<!--          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--        <property name="maxUploadSize" value="2097152" />-->
+<!--    </bean>-->
+
+
+    <!-- message support -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="defaultEncoding" value="utf-8"/>
+		<property name="basenames">
+            <array>
+                <value>config/international/messages</value>
+                <value>config/validation/validation</value>
+            </array>
+        </property>
+    </bean>
+
+    <!-- Saves a locale change using a session-->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+
+
+
+
+
+
+
+
+
+    <!-- ①：启动Spring MVC的注解功能(使用最新的处理类)  -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+ 
+    </bean>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="fastJsonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+
+
+
+	<mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+		<mvc:interceptor>
+			<mvc:mapping path="/api/**" />
+			<bean class="org.marker.mushroom.interceptor.SignInterceptor"></bean>
+		</mvc:interceptor>
+
+
+		<mvc:interceptor>
+			<mvc:mapping path="/admin/**.do"/>
+			<bean class="org.marker.mushroom.interceptor.RequestParamsInterceptor"></bean>
+		</mvc:interceptor>
+
+<!--        <mvc:interceptor>-->
+<!--            <mvc:mapping path="/admin/*.do"/>-->
+<!--            <mvc:mapping path="/admin/**/**.do"/>-->
+<!--			<mvc:exclude-mapping path="/admin/login.*"/>-->
+<!--            <mvc:exclude-mapping path="/admin/loginSystem.*"/>-->
+<!--            <bean class="org.marker.mushroom.interceptor.LoginInterceptor" />-->
+<!--        </mvc:interceptor>-->
+	</mvc:interceptors>
+
+
+	<!-- 静态资源配置 -->
+    <mvc:resources mapping="/public/**" location="/public/"/>
+    <mvc:resources mapping="/upload/**" location="/upload/"/>
+    <mvc:resources mapping="/admin/**" location="/admin/"/>
+<!--	<mvc:resources mapping="/install/**" location="/WEB-INF/content/install/"/>-->
+	<mvc:resources mapping="/robots.txt" location="/robots.txt" />
+
+
+
+	<!-- ②：对web包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+	<context:component-scan base-package="org.marker.mushroom" annotation-config="true" />
+
+
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+
+    </bean>
+    
+    <!-- ③：对模型视图名称的解析，这里采用多视图支持框架 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+	  	<property name="cache" value="true"/>
+		<property name="prefix" value=""/>
+		<property name="suffix" value=".html"/>
+		<property name="contentType" value="text/html; charset=utf-8"></property>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeRequestAttributes" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="requestContextAttribute" value="req"/>
+	</bean>
+	
+	
+    <!-- 后台Freemarker模版引擎配置 -->
+ 	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+  		<property name="templateLoaderPath" value="classpath:/templates/content/"/>
+   		<property name="freemarkerSettings">
+       		<props>
+       			<prop key="defaultEncoding">UTF-8</prop>
+       			<prop key="template_update_delay">0</prop>
+       			 <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="number_format">0.##</prop>
+       			<prop key="locale">zh_CN</prop>  
+       			<!-- 自动获取spring.ftl宏，此处路径是上面templateLoaderPath的相对路径 -->  
+            	<prop key="auto_import">common/spring.ftl as spring</prop>
+       		</props>
+       	</property>
+        <!-- freemarker变量注入 -->
+        <property name="freemarkerVariables">
+          <map>
+            <entry key="encoder"><bean class="org.marker.urlrewrite.freemarker.FrontURLRewriteMethodModel" /></entry>
+          </map>
+        </property>
+	</bean>
+	
+ 	
+ 	
+ 	
+ 	
+ 	<!-- 
+ 	  JSONP
+	 	访问: http://localhost:8080/json?callback=callback
+	 	响应: callback({"user":{"id":1,"name":"zhangsan"}});
+ 	
+ 	<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+        <property name="jsonpParameterNames">
+            <set>
+                <value>jsonp</value>
+                <value>callback</value>
+            </set>
+       </property>
+    </bean>
+ 	 -->
+	<!-- Json解析器 -->
+	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
+	<bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+		<property name="features">
+			<list>
+				<value>WriteMapNullValue</value>
+				<value>WriteNullNumberAsZero</value>
+			</list>
+		</property>
+	</bean>
+</beans>

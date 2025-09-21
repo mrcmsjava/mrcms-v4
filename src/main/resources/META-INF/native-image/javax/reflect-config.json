@@ -1,0 +1,23 @@
+[
+  {
+    "name": "javax.imageio.plugins.jpeg.JPEGQTable",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "fields":[{"name":"qTable"}]
+  },
+  {
+    "name": "org.marker.mushroom.beans.Page",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {"name":"java.awt.Font","methods":[{"name":"<init>","parameterTypes":["java.lang.String","int"]}]},
+  {"name":"java.awt.image.BufferedImage"}
+]

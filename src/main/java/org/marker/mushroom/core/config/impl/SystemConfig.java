@@ -1,0 +1,245 @@
+package org.marker.mushroom.core.config.impl;
+
+
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
+import org.marker.mushroom.core.config.ConfigDBEngine;
+import org.marker.mushroom.holder.SpringContextHolder;
+import org.marker.mushroom.holder.WebRealPathHolder;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.annotation.Resource;
+import java.io.File;
+
+
+/**
+ * 系统配置类（对Properties进行了简单封装）
+ * 用于配置系统配置文件，提供读取和保存两种持久化操作
+ * 在系统StartListener监听器中进行配置文件地址的初始化
+ * @author marker
+ * */
+@NoArgsConstructor
+public final class SystemConfig extends ConfigDBEngine<ConfigDBEngine> {
+
+
+	
+	
+	// 开发模式
+	public static final String DEV_MODE =  "dev_mode";
+	
+	// 主题文件夹
+	public static final String THEMES_PATH = "themes_path";
+	public static final String PLUGINS_PATH = "plugins_path";
+
+	// 当前使用的主题
+	public static  final  String THEMES_ACTIVE = "themes_active";
+
+	/** 主题缓存目录 */
+	public static final String THEMES_CACHE = "themes_cache";
+	
+	// 是否开启动态HTML的GZIP
+	public static final String GZIP = "gzip";
+	
+	// 是否启用站内统计
+	public static final String STATISTICS = "statistics";
+	
+	// 是否启用代码压缩
+	public static final String COMPRESS = "compress";
+	
+	// 默认语言
+	public static final String DEFAULTLANG = "defaultlang";
+	
+	// 页面静态化
+	public static final String STATIC_PAGE = "statichtml";
+	
+	// 主页地址
+	public static final String HOME_PAGE = "index_page";
+
+	// 文件存储路径
+	public static final String FILE_PATH = "file_path";
+	/**
+	 * 统计脚本
+	 */
+	public static final String STATISTICS_SCRIPT = "statisticsScript";
+	// 登录路径配置
+	public static final String SYSTEM_LOGIN_SAFE = "system.login.safe";
+
+
+	private static SystemConfig systemConfig;
+
+
+
+	/**
+	 * 初始化就读取配置文件哦
+	 */
+
+
+	/**
+	 * 获取实例
+	 * @return SystemConfig
+	 */
+	public static SystemConfig getInstance() {
+		return SpringContextHolder.getApplicationContext().getBean(SystemConfig.class);
+	}
+
+
+	/**
+	 * 配置文件中属性名称配置
+	 * */
+	public interface Names{
+		/** 关键字 */
+		String KEYWORDS = "keywords";
+		/** 描述信息 */
+		String DESCRIPTION = "description";
+	}
+
+
+	/**
+	 * 开发模式
+	 * @return
+	 */
+	public boolean isdevMode() {
+		String value = this.properties.get(DEV_MODE).toString();
+		return Boolean.valueOf(value);
+	}
+	
+	/**
+	 * 是否启用统计
+	 * @return
+	 */
+	public boolean isStatistics() {
+		String value = this.properties.get(STATISTICS).toString(); 
+		return Boolean.valueOf(value); 
+	}
+
+	
+	/**
+	 * 是否启用代码压缩
+	 * @return
+	 */
+	public boolean isCompress() {
+		String value = this.properties.get(COMPRESS).toString(); 
+		return Boolean.valueOf(value); 
+	}
+
+	
+	/**
+	 * 获取默认语言
+	 * @return
+	 */
+	public String getDefaultLanguage() {
+		return this.properties.getProperty(DEFAULTLANG, "zh-CN");
+	}
+
+	
+	/**
+	 * 是否启用页面静态化
+	 * @return
+	 */
+	public boolean isStaticPage() { 
+		String value = this.properties.getProperty(STATIC_PAGE); 
+		return Boolean.valueOf(value);  
+	}
+
+	
+	/**
+	 * 获取主页地址
+	 * @return
+	 */
+	public String getHomePage() {
+		return this.properties.getProperty(HOME_PAGE);
+	}
+
+	
+	/**
+	 * 是否启用Gzip
+	 * @return
+	 */
+	public boolean isGzip() {
+		String value = this.properties.getProperty(GZIP); 
+		return Boolean.valueOf(value);
+	}
+
+    /**
+     * 获取文件存储地址
+     * @return
+     */
+    public String getFilePath() {
+        return this.properties.getProperty(FILE_PATH);
+    }
+
+
+	/**
+	 * 获取模板配置路径
+     * (如果数据库中没有配置则使用当前项目中的themes文件夹)
+	 * @return
+	 */
+	public String getThemesPath(){
+        String themesPath = this.properties.getProperty(THEMES_PATH);
+        if(StringUtils.isEmpty(themesPath)){
+            return WebRealPathHolder.REAL_PATH + "themes";
+        }
+    	return themesPath;
+	}
+
+	/**
+	 * 获取插件路径
+	 * @return
+	 */
+	public String getPluginsPath(){
+        String themesPath = this.properties.getProperty(PLUGINS_PATH);
+        if(StringUtils.isEmpty(themesPath)){
+            return WebRealPathHolder.REAL_PATH + "plugins";
+        }
+		return new File(themesPath).getAbsolutePath();
+//    	return themesPath;
+	}
+
+
+	/**
+	 * 获取模板配置相对路径
+	 * （相对网站根路径的）
+	 * @return
+	 */
+	public String getThemesRelativePath(){
+		String themesPath = this.properties.getProperty(THEMES_PATH);
+		if (StringUtils.isBlank(themesPath)) {
+			return "/themes";
+		}
+    	return themesPath.replace(WebRealPathHolder.REAL_PATH,"");
+	}
+
+
+	/**
+	 * 获取当前使用的主题
+	 * @return
+	 */
+	public String getThemeActive(){
+		return this.properties.getProperty(THEMES_ACTIVE,"default");
+	}
+
+
+	/**
+	 * 获取安全登录码
+	 * @return
+	 */
+	public String getLoginSafe(){
+		return this.properties.getProperty(SYSTEM_LOGIN_SAFE,"");
+	}
+
+    /**
+     * 获取主题缓存目录
+     * @return
+     */
+    public String getThemesCache(){
+        return this.properties.getProperty(THEMES_CACHE,"/data/tmp");
+    }
+
+
+	public String getDangjian() {
+		return this.properties.getProperty("dangjian","[]");
+	}
+
+
+
+}

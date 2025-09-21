@@ -1,0 +1,8 @@
+{
+  "resources": {
+    "includes": [
+      {"pattern": "fonts/.*.ttf"},
+      {"pattern": "META-INF/services/.*"}
+    ]
+  }
+}

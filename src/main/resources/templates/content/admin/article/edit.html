@@ -1,0 +1,333 @@
+<div class="content">
+	<div class="tab_bar">
+		<ul>
+			<li class="tab_index" onclick="setTabContent(this);">编辑文章</li>
+		</ul>
+		 <button class="btn_tabbar submit_it" onclick="mySubmitForm(this);" return="article/list.do?currentPageNo=1">保 存</button>
+	</div>
+
+
+	<form id="myForm" action="article/update.do" method="post" class="form-horizontal" onsubmit="return false;">
+		<input name="id" type="hidden" value="${article.id?c}" />
+
+	<div class="tab_content">
+		<div class="tab_item tab_show">
+
+			<div class="control-group">
+				<label class="control-label">所属栏目：</label>
+				<div class="controls">
+					<select id="channelId" class="select_for_add" name="cid">
+						<@channelTree id = 0 node = -1/>
+					</select>
+					<div class="help-block"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">所属分类：</label>
+				<div class="controls">
+					<select id="categoryId"  class="select_for_add" name="did">
+						<option value="-1"> -------- 没有分类 -------- </option>
+						<@categoryTree id = 0 node = -1/>
+					</select>
+					<div class="help-block"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">文章标题：</label>
+				<div class="controls">
+					<input id="title" name="title" type="text" value="${article.title!}" placeholder="请输入文章标题" />
+<!--					<button type="button" onclick="aiContent()">AI生成内容</button>-->
+					<div class="help-block"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">文章图标：</label>
+				<div class="controls">
+					<input id="articleIcon"   name="icon" type="text" value="${article.icon!}" />
+					<button type="button" onclick="uploadImage()">上传图片</button>
+					<div class="help-block"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">内容类型：</label>
+				<div class="controls">
+					<#if article.type == 0>
+						<input id="statistics_1" name="type" type="radio" value="0" checked="checked" /><label for="statistics_1">&nbsp;HTML&nbsp; &nbsp;</label>
+						<input id="statistics_2" name="type" type="radio" value="1" /><label for="statistics_2">&nbsp;text/markdown&nbsp; &nbsp;</label>
+						<#else>
+							<input id="statistics_1" name="type" type="radio" value="0" /><label for="statistics_1">&nbsp;HTML&nbsp; &nbsp;</label>
+							<input id="statistics_2" name="type" type="radio" value="1" checked="checked"  /><label for="statistics_2">&nbsp;text/markdown&nbsp; &nbsp;</label>
+					</#if>
+					<div class="help-block">切换类型将会清空内容哦</div>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<script type="text/plain" id="mushroomeditor" name="content" style=" min-height:350px;;"></script>
+				<textarea id="mrcmsContent" style="display:none"><#if article.type == 0>${article.content!}<#else>${article.orginal!}</#if></textarea>
+			</div>
+
+
+
+			<div class="control-group">
+				<label class="control-label">文章关键字：</label>
+				<div class="controls">
+					<input id="keywords" name="keywords" value="${article.keywords!}" type="text" />
+					<div class="help-block"> </div>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">文章描述：</label>
+				<div class="controls">
+					<textarea  name="description">${article.description!}</textarea>
+					<div class="help-block"> </div>
+				</div>
+			</div>
+
+
+			<div class="control-group">
+				<label class="control-label">文章作者：</label>
+				<div class="controls">
+					<input class="input_for_add" name="author" type="text" value="${article.author!}" />
+					<div class="help-block"> </div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">原文地址：</label>
+				<div class="controls">
+					<input name="source" type="text" value="${article.source!}" />
+					<div class="help-block"> </div>
+				</div>
+			</div>
+
+
+			<#if Session.userGroupId == 1>
+				<div class="control-group">
+					<label class="control-label">文章状态：</label>
+					<div class="controls">
+						<#if article.status == 1>
+							<input id="status_1" name="status" type="radio" value="1" checked="checked" /> <label for="status_1">发布</label>
+							<input id="status_0" name="status" type="radio" value="0" /> <label for="status_0">草稿</label>
+							<#else>
+								<input id="status_1" name="status" type="radio" value="1"/> <label for="status_1">发布</label>
+								<input id="status_0" name="status" type="radio" value="0" checked="checked"/> <label for="status_0">草稿</label>
+						</#if>
+						<div class="help-block"> </div>
+					</div>
+				</div>
+				<#else>
+					<input type="hidden" name="status" value="0" />
+			</#if>
+
+			<div class="control-group">
+				<label class="control-label">是否推荐：</label>
+				<div class="controls">
+					<input name="stick" type="checkbox"  value="1"   />
+					<div class="help-block"> </div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+	</form> 
+</div>
+
+<script type="text/javascript">
+$(function(){
+	// article.stick
+
+	$("input[name='stick']").prop('checked', ${article.stick?c}).change();
+
+
+	$("input[name='type']").click(function(){
+ 		editor.execCommand( 'source');
+		if($(this).val() == 1){
+ 	 		editor.setDisabled();
+		}else{ 
+			editor.setEnabled();
+		}
+	 	editor.setContent('');
+	});
+	
+	
+	
+	if(window.editor !=null){
+		window.editor.destroy();
+	}
+	 //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    window.editor = UE.getEditor('mushroomeditor');
+ 	
+	window.editor.ready(function(){
+		$("#title").focus();//纠正显示
+		<#if article.type == 1> 
+ 			editor.execCommand( 'source');
+	 		editor.setDisabled();
+		</#if> 
+		editor.setContent($("#mrcmsContent").val());
+
+		// document.querySelectorAll('pre code').forEach((block) => {
+		// 	hljs.highlightBlock(block);
+		// });
+
+		// SyntaxHighlighter.highlight();
+	});
+});
+
+function aiContent(){
+	let title = $("#title").val();
+	console.log(title)
+
+	editor.focus()
+
+	let content = "";
+
+	// 获取光标内容
+	// console.log(editor)
+	// let selection = editor.iframe.contentDocument.getSelection();
+	// debugger
+	// let indexOffset = selection.startOffset;
+	// var range = selection.getRangeAt(0); // 获取第一个范围
+	// var startNode = range.startContainer; // 获取起始容器节点
+	// var endNode = range.endContainer; // 获取结束容器节点
+	//
+	// // 通常两者相同，如果不是，你可能需要进一步处理来确定具体节点
+	// if (startNode === endNode) {
+	// 	console.log("光标所在的节点是:", startNode);
+	// } else {
+	// 	console.log("起始节点:", startNode);
+	// 	console.log("结束节点:", endNode);
+	// }
+
+
+	const eventSource = new EventSource("/admin/openai/stream.do?prompt="+title);
+
+	let oldContent= editor.getContent();
+
+	eventSource.onmessage = function(event) {
+		// 将接收到的内容追加到页面上
+		console.log(event)
+		let obj = JSON.parse(event.data);
+
+		content += obj.content;
+		// 解析markdown->html
+		const md = markdownit({
+			html: true,
+			linkify: true,
+			typographer: true ,
+			breaks:       true, // \n转 M<br>
+		})
+		// content = content.replaceAll('\n','<br/>')
+		doc = md.render(content);
+
+		editor.setContent(oldContent +"<br/>"+ doc );
+		// 当需要时调用sync来更新视图
+		// editor.sync();
+	};
+
+	eventSource.onerror = function(event) {
+		console.log(event)
+		eventSource.close();
+	};
+
+
+}
+
+/**
+ * byte[] 格式转字符串
+ * @param {byte[]} arr
+ */
+function byteToString(arr) {
+	if(typeof arr === 'string') {
+		return arr;
+	}
+	var str = '',
+			_arr = arr;
+	for(var i = 0; i < _arr.length; i++) {
+		var one = _arr[i].toString(2),
+				v = one.match(/^1+?(?=0)/);
+		if(v && one.length == 8) {
+			var bytesLength = v[0].length;
+			var store = _arr[i].toString(2).slice(7 - bytesLength);
+			for(var st = 1; st < bytesLength; st++) {
+				store += _arr[st + i].toString(2).slice(2);
+			}
+			str += String.fromCharCode(parseInt(store, 2));
+			i += bytesLength - 1;
+		} else {
+			str += String.fromCharCode(_arr[i]);
+		}
+	}
+	return str;
+}
+
+function mySubmitForm(obj){
+ 	window.editor.sync();//手动提交需要手动同步编辑器数据
+	submitActionForm(obj);
+} 
+
+
+//设置栏目ID
+var cid = '${article.cid?c}';
+$("#channelId").attr('value',cid);
+$("#categoryId").attr('value','${article.did?c}');
+
+
+
+
+var _editor = UE.getEditor('upload_ue');
+_editor.ready(function () {
+    console.log("ueditor success!")
+    //设置编辑器不可用
+    _editor.setDisabled();
+    //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
+    _editor.hide();
+    //侦听图片上传
+    _editor.addListener('beforeInsertImage', function (t, arg) {
+        console.log(arg);
+    })
+    //侦听文件上传
+    _editor.addListener('afterUpfile', function (t, arg) {
+        console.log(arg);
+        $("#articleIcon").attr("value", arg[0].src);
+    })
+	editor.addListener('contentChange', function() {
+		var content = this.getContent();
+		console.log('HTML内容长度:', content.length);
+	});
+	// editor.addListener('beforepaste', function (type, html) {
+	// 	// 在粘贴前处理内容，例如添加<code>标签
+	// 	html = html.replace(/<pre>/g, '<pre><code>').replace(/<\/pre>/g, '</code></pre>');
+	// 	return html;
+	// });
+});
+
+function uploadImage(){
+    var myImage = _editor.getDialog("insertimage");
+    myImage.open();
+}
+</script>
+
+<#macro categoryTree id node>
+	<#local temp = node + 1 />
+	<#list categorys as x>
+	  	<#if id = x.pid>
+	  	<option value="${x.id?c}"><#list 0..temp as i> &nbsp; &nbsp; </#list>├ ${x.name!}</option>
+	    <@categoryTree id = x.id node=temp/>
+      	</#if>
+	</#list> 
+</#macro>
+
+
+
+<#macro channelTree id node>
+	<#local temp = node + 1 />
+	<#list channels as comment>
+		<#if id = comment.pid>
+			<option value="${comment.id?c}"><#list 0..temp as x> &nbsp; &nbsp; </#list>├ ${comment.name!}</option>
+			<@channelTree id = comment.id node=temp/>
+		</#if>
+	</#list>
+</#macro>
