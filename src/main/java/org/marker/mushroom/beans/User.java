@@ -11,6 +11,7 @@ import org.marker.mushroom.dao.annotation.Entity;
  * 用户对象
  * @author marker
  * */
+
 @Entity("user")
 public class User implements Serializable{
 	

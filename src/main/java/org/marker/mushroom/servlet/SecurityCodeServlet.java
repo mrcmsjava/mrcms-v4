@@ -45,7 +45,7 @@ public class SecurityCodeServlet extends HttpServlet {
 			throws ServletException, IOException {
         String text = producer.createText();
 		// 将四位数字的验证码保存到Session中。
-		HttpSession session = request.getSession(true);
+		HttpSession session = request.getSession();
 		session.setAttribute(AppStatic.WEB_APP_AUTH_CODE, text.toLowerCase());
 		BufferedImage image = producer.createImage(text);
         response.setContentType("image/png");

@@ -1,5 +1,6 @@
 package org.marker.mushroom.dao;
 
+import org.apache.el.util.ReflectionUtil;
 import org.marker.mushroom.beans.Page;
 import org.marker.mushroom.dao.annotation.Entity;
 import org.marker.mushroom.dao.annotation.EntityFieldIgnore;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -23,11 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 
 /**
@@ -272,25 +270,25 @@ public abstract class DaoEngine implements ISupportDao {
 					+ fieldName.replaceFirst(fieldName.charAt(0) + "",
 							(char) (fieldName.charAt(0) - 32) + "");
 
-			Method me = null;
-			try {
-				me = clzz.getMethod(methodName);
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
+
+			Method[] methods = ReflectionUtils.getDeclaredMethods(clzz);
+
+			Optional<Method> methodOptional = List.of(methods).stream()
+					.filter(method -> Objects.equals(methodName, method.getName()))
+					.findFirst();
 
 			Object returnObject = null;
-			try {
-				returnObject = me.invoke(entity);
-			} catch (IllegalArgumentException e) { 
-				e.printStackTrace();
-			} catch (IllegalAccessException e) { 
-				e.printStackTrace();
-			} catch (InvocationTargetException e) { 
-				e.printStackTrace();
-			}//
+			if(methodOptional.isPresent()){
+				try {
+					returnObject = methodOptional.get().invoke(entity);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}//
+			}
 			if (returnObject != null) {// 如果返回值为null
 				sql.append("`" + fieldName + "`");
 				val.append("?");
@@ -299,7 +297,7 @@ public abstract class DaoEngine implements ISupportDao {
 					val.append(","); 
 			}
 		}
-		 
+		logger.debug("sql:{} ,{}",sql, val);
 		final StringBuilder sql2 = new StringBuilder(sql.substring(0, sql.length()-1));
 		StringBuilder val2 = new StringBuilder(val.substring(0, val.length()-1));
 	

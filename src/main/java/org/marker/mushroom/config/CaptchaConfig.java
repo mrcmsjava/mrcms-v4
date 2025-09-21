@@ -18,7 +18,7 @@ public class CaptchaConfig {
         Class.forName("java.awt.Color");
 
         Properties props = new Properties();
-        props.put("kaptcha.textproducer.font.color", "0x000000");
+        props.put("kaptcha.textproducer.font.color", "black");
         props.put("kaptcha.textproducer.char.length", "4");
         Config config = new Config(props);
         return config.getProducerImpl();

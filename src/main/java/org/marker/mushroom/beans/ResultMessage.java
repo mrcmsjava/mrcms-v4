@@ -1,7 +1,6 @@
 package org.marker.mushroom.beans;
 
 
-import java.io.Serializable;
 
 /**
  * 响应消息
@@ -9,7 +8,7 @@ import java.io.Serializable;
  *
  * @author marker
  * */
-public class ResultMessage implements Serializable {
+public class ResultMessage     {
 
 	/** 状态 */
 	private boolean status;
