@@ -270,6 +270,8 @@
 				<configuration>
 					<imageName>${project.artifactId}</imageName> <!-- 生成的可执行文件名称 -->
 					<mainClass>org.marker.mushroom.MrcmsApplication</mainClass> <!-- 你的主类完整路径 -->
+                    <!-- 设置输出目录 -->
+                    <outputDirectory>${project.basedir}/native</outputDirectory>
 					<buildArgs>
 						<arg>--no-fallback</arg> <!-- 要求生成完全原生的镜像 -->
 						<arg>-Ob</arg> <!-- 启用符号表压缩 -->

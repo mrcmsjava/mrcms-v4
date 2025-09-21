@@ -53,7 +53,7 @@ steps:
       port: 22
       strip_components: 2
       target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
-      source: ./target/
+      source: ./native/
     when:
       branch:
         - dev
@@ -71,7 +71,7 @@ steps:
       mirror: https://dkwe3jow.mirror.aliyuncs.com
       storage_path: /docker
       dockerfile: Dockerfile
-      build_args: JAR_FILE=./target/mrcms
+      build_args: JAR_FILE=./native/
       username:
         from_secret: registry_nexus_username
       password:
