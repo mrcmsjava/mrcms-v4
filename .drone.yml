@@ -28,6 +28,7 @@ steps:
       - echo 构建号：${DRONE_BRANCH}
       - echo "识别环境 决定资源"
       - if [ "${DRONE_BRANCH}" != "prod" ]; then echo 'prod' ;fi
+      - ls /drone/maven
       - chmod +x /drone/maven/bin/mvn
       - /drone/maven/bin/mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pnative
     branch:
