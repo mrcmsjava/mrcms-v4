@@ -69,7 +69,7 @@ volumes:
       path: /opt/data/drone/.m2
   - name: maven
     host:
-      path: /opt/drone/build/apache-maven-3.9.11
+      path: /opt/apps/drone/build/apache-maven-3.9.11
   - name: dockerSock
     host:
       path: /var/run/docker.sock
