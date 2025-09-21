@@ -1,4 +1,4 @@
-FROM alpine:3.22.1
+FROM  nas.mrcms.cn:8082/alpine:3.22.1
 
 # 构建参数
 ENV JAVA_OPTS -Xms512m -Xmx512m
