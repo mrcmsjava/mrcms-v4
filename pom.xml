@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20160810</version>
+			<version>20231013</version>
 		</dependency>
 
 		<dependency>
@@ -164,7 +164,7 @@
 		<dependency>
 			<groupId>io.github.gitbucket</groupId>
 			<artifactId>markedj</artifactId>
-			<version>1.0.12</version>
+			<version>1.0.17</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
@@ -179,7 +179,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.4</version>
+			<version>1.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ansj</groupId>
