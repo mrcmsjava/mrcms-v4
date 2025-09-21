@@ -34,6 +34,9 @@ steps:
     branch:
       - dev
 
+
+
+
   - name: scp to ${DRONE_BRANCH}
     image: nas.mrcms.cn:8082/appleboy/drone-scp
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
@@ -56,6 +59,29 @@ steps:
         - dev
 
 
+  - name: image
+    image: plugins/docker
+    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+    volumes:
+      - name: dockerSock
+        path: /var/run/docker.sock
+    settings:
+      insecure: false
+      registry: 192.168.1.6:32588
+      mirror: https://dkwe3jow.mirror.aliyuncs.com
+      storage_path: /docker
+      dockerfile: Dockerfile
+      build_args: JAR_FILE=./target/mrcms
+      username:
+        from_secret: registry_nexus_username
+      password:
+        from_secret: registry_nexus_password
+      repo: 192.168.1.6:32588/wuweiit/mrcms
+      tags:
+        - ${DRONE_BUILD_NUMBER}
+    when:
+      branch:
+        - dev
 
 volumes:
   - name: ssh
