@@ -13,7 +13,7 @@ ARG JAR_FILE
 WORKDIR /app
 
 # maven输出的jar包复制到镜像中
-COPY ./ /app
+COPY ./native /app
 
 #ADD ./tini /tini
 
