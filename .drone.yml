@@ -25,9 +25,9 @@ steps:
       - echo 构建号：${DRONE_BRANCH}
       - echo "识别环境 决定资源"
       - if [ "${DRONE_BRANCH}" != "prod" ]; then echo 'prod' ;fi
-      - mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U
+      - mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pnative
     branch:
-      - release
+      - dev
 
   - name: scp to ${DRONE_BRANCH}
     image: nas.mrcms.cn:8082/appleboy/drone-scp
@@ -44,11 +44,11 @@ steps:
         from_secret: ssh_rsa
       port: 22
       strip_components: 2
-      target: /opt/baota/www/wwwroot/open.joggle.cn/mrcms/
-      source: ./target/ROOT.war
+      target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
+      source: ./target/
     when:
       branch:
-        - release
+        - dev
 
 
 
@@ -71,4 +71,4 @@ trigger:
       - push
       - custom
   branch:
-    - release
+    - dev
