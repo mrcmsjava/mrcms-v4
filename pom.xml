@@ -274,6 +274,7 @@
                     <outputDirectory>${project.basedir}/native</outputDirectory>
 					<buildArgs>
 						<arg>--no-fallback</arg> <!-- 要求生成完全原生的镜像 -->
+                        <arg>-march=compatibility</arg>
 						<arg>-Ob</arg> <!-- 启用符号表压缩 -->
 						<arg>--initialize-at-build-time=com.google.code.kaptcha</arg>
                         <arg>--allow-incomplete-classpath</arg>
