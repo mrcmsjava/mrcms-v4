@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
@@ -79,13 +80,19 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
     }
 
     @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_HTML));
+        converters.add(mappingJackson2HttpMessageConverter);
+    }
+
+    @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
-        fastJsonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_HTML));
-        fastJsonHttpMessageConverter.setFeatures(WriteMapNullValue, WriteNullNumberAsZero);
-        converters.add(fastJsonHttpMessageConverter);
-
-
+//        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
+//        fastJsonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_HTML));
+//        fastJsonHttpMessageConverter.setFeatures(WriteMapNullValue, WriteNullNumberAsZero);
+//        converters.add(fastJsonHttpMessageConverter);
     }
 
     /**

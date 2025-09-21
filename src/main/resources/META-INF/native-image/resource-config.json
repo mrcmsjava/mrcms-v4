@@ -21,6 +21,8 @@
   }, {
     "pattern":"\\Qapplication.yml\\E"
   }, {
+    "pattern":"\\Qcom/mysql/cj/TlsSettings.properties\\E"
+  }, {
     "pattern":"\\Qcom/wuweibi/module4j/listener/InstallListenter.class\\E"
   }, {
     "pattern":"\\Qconfig.properties\\E"
@@ -77,6 +79,8 @@
   }, {
     "pattern":"\\Qorg/apache/catalina/core/RestrictedServlets.properties\\E"
   }, {
+    "pattern":"\\Qorg/apache/catalina/loader/JdbcLeakPrevention.class\\E"
+  }, {
     "pattern":"\\Qorg/apache/catalina/util/CharsetMapperDefault.properties\\E"
   }, {
     "pattern":"\\Qorg/apache/catalina/util/ServerInfo.properties\\E"
@@ -88,6 +92,8 @@
     "pattern":"\\Qorg/marker/mushroom/ServletInitializer.class\\E"
   }, {
     "pattern":"\\Qorg/marker/mushroom/\\E"
+  }, {
+    "pattern":"\\Qorg/marker/mushroom/config/CaptchaConfig.class\\E"
   }, {
     "pattern":"\\Qorg/marker/mushroom/config/CmsCacheConfig.class\\E"
   }, {
@@ -312,6 +318,8 @@
     "pattern":"\\Qorg/marker/mushroom/service/impl/ThematicService.class\\E"
   }, {
     "pattern":"\\Qorg/marker/mushroom/statistic/StatisticUtil.class\\E"
+  }, {
+    "pattern":"\\Qorg/marker/mushroom/support/KaptchaController.class\\E"
   }, {
     "pattern":"\\Qorg/marker/mushroom/support/SupportController.class\\E"
   }, {
@@ -597,26 +605,6 @@
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/task/TaskSchedulingConfigurations$ThreadPoolTaskSchedulerBuilderConfiguration.class\\E"
   }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/TemplateEngineConfigurations$DefaultTemplateEngineConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/TemplateEngineConfigurations$ReactiveTemplateEngineConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$DataAttributeDialectConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$ThymeleafSecurityDialectConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$ThymeleafWebFluxConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$ThymeleafWebLayoutConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$ThymeleafWebMvcConfiguration$ThymeleafViewResolverConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration$ThymeleafWebMvcConfiguration.class\\E"
-  }, {
-    "pattern":"\\Qorg/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration.class\\E"
-  }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$AspectJTransactionManagementConfiguration.class\\E"
   }, {
     "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration$CglibAutoProxyConfiguration.class\\E"
@@ -851,8 +839,6 @@
   }, {
     "pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"
   }, {
-    "pattern":"\\Qtemplates/\\E"
-  }, {
     "pattern":"\\Qtemplates/content/\\E"
   }]},
   "bundles":[{
@@ -951,5 +937,8 @@
   }, {
     "name":"org.apache.tomcat.websocket.server.LocalStrings",
     "locales":[""]
+  }, {
+    "name":"sun.awt.resources.awt",
+    "classNames":["sun.awt.resources.awt", "sun.awt.resources.awt_zh_CN"]
   }]
 }

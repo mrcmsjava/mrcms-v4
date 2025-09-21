@@ -56,10 +56,7 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
@@ -117,7 +114,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20160810</version>
+			<version>20231013</version>
 		</dependency>
 
 		<dependency>
@@ -136,7 +133,10 @@
 			<artifactId>javassist</artifactId>
 			<version>3.20.0-GA</version>
 		</dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>com.wuweibi</groupId>
 			<artifactId>weixinapi</artifactId>
@@ -164,7 +164,7 @@
 		<dependency>
 			<groupId>io.github.gitbucket</groupId>
 			<artifactId>markedj</artifactId>
-			<version>1.0.12</version>
+			<version>1.0.17</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
@@ -179,7 +179,7 @@
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.4</version>
+			<version>1.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ansj</groupId>
@@ -270,8 +270,11 @@
 				<configuration>
 					<imageName>${project.artifactId}</imageName> <!-- 生成的可执行文件名称 -->
 					<mainClass>org.marker.mushroom.MrcmsApplication</mainClass> <!-- 你的主类完整路径 -->
+                    <!-- 设置输出目录 -->
+                    <outputDirectory>${project.basedir}/native</outputDirectory>
 					<buildArgs>
 						<arg>--no-fallback</arg> <!-- 要求生成完全原生的镜像 -->
+                        <arg>-march=compatibility</arg>
 						<arg>-Ob</arg> <!-- 启用符号表压缩 -->
 						<arg>--initialize-at-build-time=com.google.code.kaptcha</arg>
                         <arg>--allow-incomplete-classpath</arg>

@@ -18,6 +18,19 @@
     "allDeclaredFields": true,
     "allPublicFields": true
   },
-  {"name":"java.awt.Font","methods":[{"name":"<init>","parameterTypes":["java.lang.String","int"]}]},
+  {"name":"java.awt.Font",
+    "methods":[{"name":"<init>","parameterTypes":["java.lang.String","int"]}]
+
+  },
+  {
+    "name": "java.awt.Color",
+    "fields": [
+      { "name": "black" },
+      { "name": "white" },
+      { "name": "blue" },
+      { "name": "red" },
+      { "name": "green" }
+    ]
+  },
   {"name":"java.awt.image.BufferedImage"}
 ]
