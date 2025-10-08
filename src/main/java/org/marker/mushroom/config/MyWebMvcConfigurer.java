@@ -29,13 +29,14 @@ import java.util.Properties;
 import static com.alibaba.fastjson.serializer.SerializerFeature.WriteMapNullValue;
 import static com.alibaba.fastjson.serializer.SerializerFeature.WriteNullNumberAsZero;
 
+@EnableWebMvc
 @Configuration
 public class MyWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
-        registry.freeMarker( ).cache(true);
-        registry.freeMarker( ).prefix("");
-        registry.freeMarker( ).suffix(".html");
+        registry.freeMarker().cache(true);
+        registry.freeMarker().prefix("");
+        registry.freeMarker().suffix(".html");
 
     }
     ///受理.do请求，不发生302重定向
@@ -69,21 +70,18 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-//        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/templates/public/");
         registry.addResourceHandler("/upload/**").addResourceLocations("/upload/");
-//        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/templates/admin/");
+        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/robots.txt").addResourceLocations("classpath:/static/robots.txt");
         registry.addResourceHandler("/install/**").addResourceLocations("classpath:/templates/content/");
-        registry.addResourceHandler("/robots.txt").addResourceLocations("classpath:/templates/robots.txt");
-
 
     }
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_HTML));
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
         converters.add(mappingJackson2HttpMessageConverter);
     }
 
@@ -127,4 +125,10 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         return messageSource;
     }
 
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        // 设置异步支持，例如超时时间等
+        configurer.setDefaultTimeout(5000);
+    }
 }

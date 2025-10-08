@@ -12,10 +12,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -30,7 +33,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
         type = ConditionalOnWebApplication.Type.SERVLET
 )
 @ConditionalOnClass({DispatcherServlet.class})
-public class WebConfig implements WebMvcRegistrations {
+public class WebConfig         {
 
     // 欢迎页面配置
 //    @Bean
@@ -55,7 +58,19 @@ public class WebConfig implements WebMvcRegistrations {
     public SessionCounter sessionCounter() {
         return new SessionCounter();
     }
-
+//    /**
+//     * 关键：配置支持异步的过滤器
+//     */
+//    @Bean
+//    public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+//        FilterRegistrationBean<RequestContextFilter> registrationBean =
+//                new FilterRegistrationBean<>();
+//        registrationBean.setFilter(new RequestContextFilter());
+//        registrationBean.setAsyncSupported(true);
+//        registrationBean.addUrlPatterns("/*");
+//        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//        return registrationBean;
+//    }
 
 
     // 其他 Servlet 配置

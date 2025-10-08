@@ -195,14 +195,13 @@ $.fn.ajaxSubmit = function(options) {
         return this;
 
     var q = $.param(a);//.replace(/%20/g,'+');
- 
 
     if (options.type.toUpperCase() == 'GET') {
         options.url += (options.url.indexOf('?') >= 0 ? '&' : '?') + q;
         options.data = null;  // data is null for 'get'
     }
     else
-        options.data = q; // data is the query string for 'post'
+        options.data = options.data || q;  // data is the query string for 'post'
 
     var $form = this, callbacks = [];
     if (options.resetForm) callbacks.push(function() { $form.resetForm(); });

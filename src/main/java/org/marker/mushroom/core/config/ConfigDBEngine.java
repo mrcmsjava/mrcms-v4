@@ -35,7 +35,6 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 	/** 日志记录器 */
 	protected static Logger logger = LoggerFactory.getLogger(ConfigDBEngine.class);
 
-
 	/**
 	 * 配置信息存放对象
 	 *(API: Properties类是线程安全的：多个线程可以共享单个Properties对象而无需进行外部同步)
@@ -86,6 +85,8 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 	}
 
 
+
+	@IgnoreCopyProperties
 	@Resource
 	protected JdbcTemplate jdbcTemplate;
 	
@@ -132,7 +133,6 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 
 		logger.debug("ConfigDBEngine copy bean to this.properties...");
 		Properties properties = ArrayUtils.beanToPropertiesConverter(this);
-//		this.properties.putAll(properties);
 
 		logger.debug("ConfigDBEngine copy properties to [{}].properties...",this.getClass().getSimpleName());
 		ConfigDBEngine configDBEngine = SpringContextHolder.getApplicationContext().getBean(this.getClass());

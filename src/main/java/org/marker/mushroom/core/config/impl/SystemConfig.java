@@ -4,6 +4,7 @@ package org.marker.mushroom.core.config.impl;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.core.config.ConfigDBEngine;
+import org.marker.mushroom.core.config.annotation.IgnoreCopyProperties;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.holder.WebRealPathHolder;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +20,7 @@ import java.io.File;
  * @author marker
  * */
 @NoArgsConstructor
-public final class SystemConfig extends ConfigDBEngine<ConfigDBEngine> {
+public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 
 
 	
@@ -63,16 +64,6 @@ public final class SystemConfig extends ConfigDBEngine<ConfigDBEngine> {
 	public static final String STATISTICS_SCRIPT = "statisticsScript";
 	// 登录路径配置
 	public static final String SYSTEM_LOGIN_SAFE = "system.login.safe";
-
-
-	private static SystemConfig systemConfig;
-
-
-
-	/**
-	 * 初始化就读取配置文件哦
-	 */
-
 
 	/**
 	 * 获取实例

@@ -26,7 +26,8 @@ public class SpringUtils implements ApplicationContextAware {
 
 	private static ApplicationContext applicationContext;
 
-	/**
+
+    /**
 	 * 实现ApplicationContextAware接口的context注入函数, 将其存入静态变量.
 	 */
 	@Override
@@ -146,6 +147,14 @@ public class SpringUtils implements ApplicationContextAware {
 		return false;
 	}
 
+	public static boolean isDev() {
+		Environment env = getBean(Environment.class);
+		String active = env.getProperty("spring.profiles.active");
+		if ("dev".equals(active)) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * 自动装配Bean

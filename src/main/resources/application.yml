@@ -12,6 +12,8 @@ MRCMS_MYSQL_PASSWORD: mfNfseXLPt3ATeFA
 SERVER_PORT: 8081
 
 spring:
+  servlet:
+    async-supported: true # 确保异步支持已开启
   jmx:
     enabled: true
   application:
@@ -19,13 +21,17 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   mvc:
+    async:
+      request-timeout: 30000
     contentnegotiation:
       favor-path-extension: true
     pathmatch:
       use-suffix-pattern: true
       use-registered-suffix-pattern: true
     servlet:
+      async-timeout: 30000
       load-on-startup: 2
+      async-supported: true
   main:
     allow-bean-definition-overriding: true
   freemarker:

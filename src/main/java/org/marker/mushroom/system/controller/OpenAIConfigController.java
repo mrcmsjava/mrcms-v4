@@ -41,7 +41,7 @@ public class OpenAIConfigController extends SupportController {
 	//保存网站配置信息
 	@ResponseBody
 	@PostMapping("/info")
-	public Object saveStorageInfo(@ModelAttribute OpenAIConfig config, HttpServletRequest request){
+	public Object saveStorageInfo(@RequestBody  OpenAIConfig config, HttpServletRequest request){
 		try {
 			/* 系统存储配置 */
 			config.storeAsync();

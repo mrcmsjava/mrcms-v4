@@ -117,6 +117,69 @@ function submitActionForm(obj){
 		$('#myForm').ajaxSubmit(options);
 	});
 }
+//提交json数据
+function submitJsonActionForm(obj){
+	//采用ajaxForm作为表单提交插件满足文件上传功能
+	zoom.showConfirmDialog("确定提交数据吗？","消息提示", function(){
+		var options = {
+			type : "POST",
+			dataType: 'json',
+			success: function(data) {
+				zoom.closeConfirmDialog();//关闭确定提示
+				if(data.status){
+					zoom.showMessageDialog(data.message, "消息提示",1000);
+					refreshContentByURL($(obj).attr("return"), $(obj).attr("name"));
+				}else{
+					if('101' == data.code){// 表示访问正常页面，但会话失效
+						zoom.showMessageDialog(data.message + "<br/>","消息提示",1500,function(){
+							window.location.href = "login.do";// 回调中刷新界面
+						});
+					}else{
+						zoom.showMessageDialog(data.message + "<br/>","消息提示",1500);
+					}
+				}
+			},
+			error: function(){
+				zoom.showMessageDialog( "网络错误，请重新尝试<br/>","消息提示",1500);
+			}
+		};
+
+
+		const formData = new FormData(document.getElementById('myForm'));
+		const jsonData = {};
+
+		for (let [key, value] of formData.entries()) {
+			// 处理点分隔的嵌套属性
+			setNestedValue(jsonData, key, value);
+		}
+
+
+		// 将表单数据转换为JSON字符串
+		// var formData = JSON.stringify($(obj).serializeArray());
+		console.log(jsonData)
+		options.data = JSON.stringify(jsonData);
+		options.contentType= 'application/json; charset=UTF-8';
+
+		$('#myForm').ajaxSubmit(options);
+	});
+}
+
+// 辅助函数：设置嵌套属性值
+function setNestedValue(obj, path, value) {
+	const keys = path.split('.');
+	let current = obj;
+
+	for (let i = 0; i < keys.length - 1; i++) {
+		const key = keys[i];
+		if (!current[key] || typeof current[key] !== 'object') {
+			current[key] = {};
+		}
+		current = current[key];
+	}
+
+	current[keys[keys.length - 1]] = value;
+}
+
 
 //表单重置
 function resetActionForm(){

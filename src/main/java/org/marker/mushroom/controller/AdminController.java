@@ -2,6 +2,7 @@ package org.marker.mushroom.controller;
 
 import jakarta.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
+import org.marker.mushroom.beans.LoginRequestDTO;
 import org.marker.mushroom.beans.ResultMessage;
 import org.marker.mushroom.beans.User;
 import org.marker.mushroom.beans.UserLoginLog;
@@ -20,10 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.ServletContext;
@@ -158,11 +156,11 @@ public class AdminController extends SupportController {
 	 * */
 	@ResponseBody
 	@RequestMapping(value="/loginSystem", method=RequestMethod.POST)
-	public Object loginSystem(HttpServletRequest request){
-		String randcode = request.getParameter("randcode");//验证码
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
-		String device   = request.getParameter("device");// 设备
+	public ResultMessage loginSystem(@RequestBody LoginRequestDTO loginRequestDTO, HttpServletRequest request){
+		String randcode = loginRequestDTO.getRandcode();//验证码
+		String username = loginRequestDTO.getUsername();
+		String password = loginRequestDTO.getPassword();
+		String device   = loginRequestDTO.getDevice();// 设备
 		HttpSession session = request.getSession();// 如果会话不存在也就创建
 		String serverValidCode = (String) session.getAttribute(AppStatic.WEB_APP_AUTH_CODE);
 		

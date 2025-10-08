@@ -19,8 +19,7 @@ import java.util.List;
  *
  * @author marker
  */
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 public final class OpenAIConfig extends ConfigDBEngine<OpenAIConfig> {
 

@@ -48,14 +48,20 @@ function submitLogin(randcode){
 	var password = $("#password").val();
 	var device   = getSysInfo();
 	var action  = "loginSystem.do";
-	var params  = "username=" + username + "&password=" + password + "&randcode=" + randcode +
-		"&device=" + device + "&r=" + Math.random();
+	var params  = {
+		"username":username,
+		"password":password,
+		"randcode":randcode,
+		"device":device,
+		"r": Math.random(),
+	}; //"username=" + username + "&password=" + password + "&randcode=" + randcode + "&device=" + device + "&r=" + Math.random();
  	
 	$.ajax({
 		url: action,
+		contentType: "application/json",
 		type:"post",
 		dataType:"json",
-		data: params,
+		data: JSON.stringify(params),
 		success: function(json){
 			if(json.status == true){
 				location.href = "index.do";

@@ -2,22 +2,31 @@ package org.marker.mushroom.config;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.ext.plugin.freemarker.EmbedDirectiveInvokeTag;
 import org.marker.mushroom.freemarker.*;
 import org.marker.mushroom.freemarker.config.WebFreeMarkerConfigurer;
 import org.marker.mushroom.freemarker.wrapper.CustomObjectWrapper;
+import org.marker.mushroom.utils.SpringUtils;
 import org.marker.urlrewrite.freemarker.FrontURLRewriteMethodModel;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@Slf4j
 @Configuration
 public class CmsFreemarkerConfig {
 
@@ -26,14 +35,23 @@ public class CmsFreemarkerConfig {
         return new StringTemplateLoader();
     }
 
+    @Resource
+    private SpringUtils springUtils;
+
+
     @Bean("webFrontConfiguration")
     public WebFreeMarkerConfigurer webFrontConfiguration() throws TemplateException, IOException {
         WebFreeMarkerConfigurer configurer = new WebFreeMarkerConfigurer();
 
         String pluginsPath = SystemConfig.getInstance().getPluginsPath();
+        String adminTemplatePath = "classpath:/templates/content/";
+        if (SpringUtils.isDev()) {
+            adminTemplatePath = new File("").getAbsolutePath() + File.separator + "src/main/resources/templates/content/";
+            log.debug("adminTemplatePath: {}", adminTemplatePath);
+        }
 
         // 设置模板加载路径
-        configurer.setTemplateLoaderPaths("classpath:/templates/content/", "classpath:/modules/", pluginsPath);
+        configurer.setTemplateLoaderPaths(adminTemplatePath, "classpath:/modules/", pluginsPath);
 
         // 设置预加载器
         configurer.setPreTemplateLoaders(stringTemplateLoader());
