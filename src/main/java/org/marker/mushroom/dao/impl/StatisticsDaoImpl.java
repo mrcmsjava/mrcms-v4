@@ -20,7 +20,8 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 	
 
 	private final  SimpleDateFormat yyyyMMdd_format = new SimpleDateFormat("yyyyMMdd");
-	
+	private final  SimpleDateFormat yyyyMMdd_format2 = new SimpleDateFormat("yyyy-MM-dd");
+
 	
 	
 
@@ -29,7 +30,7 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 	@Override
 	public Map<String, Object> today() {
 		Date as = new Date();
-		String time = yyyyMMdd_format.format(as);
+		String time = yyyyMMdd_format2.format(as);
 		return query(time);
 	}
 
@@ -38,7 +39,7 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 	@Override
 	public Map<String, Object> yesterday() {
 		Date as = new Date(new Date().getTime()-24*60*60*1000);
-		String time = yyyyMMdd_format.format(as); 
+		String time = yyyyMMdd_format2.format(as);
 		return query(time );
 	}
 
@@ -48,9 +49,13 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 	// 查询某天的访问情况，没有缓存
 	public Map<String, Object> query(String time){
 		final Map<String, Object> data = new HashMap<String, Object>(24);
+		String todayStart = time + " 00:00:00";
+		String todayEnd = time + " 23:59:59";
 		
 		// 查询今天访问每小时详细情
-		String sql = "select A.* from (select DATE_FORMAT(time,'%Y%m%d-%H') gdate, DATE_FORMAT(time,'%H') hours, DATE_FORMAT(time,'%Y%m%d') date,count(DISTINCT ip) ip,COUNT(DISTINCT visitor) uv, COUNT(id)  pv  from "+getPreFix()+"visited_his GROUP BY gdate) A where date = ?";
+		String sql = "select A.* from (select DATE_FORMAT(time,'%Y%m%d-%H') gdate, DATE_FORMAT(time,'%H') hours, " +
+				"DATE_FORMAT(time,'%Y%m%d') date,count(DISTINCT ip) ip,COUNT(DISTINCT visitor) uv, COUNT(id)  pv  " +
+				"from "+getPreFix()+"visited_his where time > ? and time < ?  GROUP BY gdate) A where date = ?";
 		final Map<Integer,Data> list = new HashMap<Integer,Data>(12); 
 		this.jdbcTemplate.query(sql,new RowCallbackHandler() { 
 			public void processRow(ResultSet rs) throws SQLException {
@@ -61,10 +66,11 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 				d.pv = rs.getInt("pv");
 				list.put(d.hours,d);
 			}
-		},time);
+		},todayStart, todayEnd,time);
 		
 		// 查询今天访问概况,并写入data
-		sql = "select A.* from (select DATE_FORMAT(time,'%Y%m%d') date,count(DISTINCT ip) ip,COUNT(DISTINCT visitor) uv, COUNT(id)  pv  from "+getPreFix()+"visited_his GROUP BY date) A where A.date = ?";
+		sql = "select A.* from (select DATE_FORMAT(time,'%Y%m%d') date,count(DISTINCT ip) ip,COUNT(DISTINCT visitor) uv, COUNT(id)  pv  " +
+				"from "+getPreFix()+"visited_his where time > ? and time < ?  GROUP BY date) A where A.date = ?";
 		this.jdbcTemplate.query(sql,new RowCallbackHandler() { 
 			public void processRow(ResultSet rs) throws SQLException {
 				data.put("date", rs.getInt("date"));
@@ -72,7 +78,7 @@ public class StatisticsDaoImpl extends DaoEngine implements IStatisticsDao{
 				data.put("uvcount", rs.getInt("uv"));
 				data.put("pvcount", rs.getInt("pv"));
 			}
-		},time);
+		},todayStart, todayEnd, time);
 		
 		
 		
