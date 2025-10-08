@@ -85,6 +85,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         converters.add(mappingJackson2HttpMessageConverter);
     }
 
+
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 //        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
