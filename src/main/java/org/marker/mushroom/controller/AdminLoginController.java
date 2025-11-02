@@ -1,0 +1,170 @@
+package org.marker.mushroom.controller;
+
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.apache.commons.lang.StringUtils;
+import org.marker.mushroom.beans.LoginRequestDTO;
+import org.marker.mushroom.beans.ResultMessage;
+import org.marker.mushroom.beans.User;
+import org.marker.mushroom.beans.UserLoginLog;
+import org.marker.mushroom.core.AppStatic;
+import org.marker.mushroom.core.config.impl.SystemConfig;
+import org.marker.mushroom.dao.IMenuDao;
+import org.marker.mushroom.dao.IUserDao;
+import org.marker.mushroom.dao.IUserLoginLogDao;
+import org.marker.mushroom.support.SupportController;
+import org.marker.mushroom.utils.GeneratePass;
+import org.marker.mushroom.utils.HttpUtils;
+import org.marker.mushroom.utils.WebUtils;
+import org.marker.qqwryip.IPLocation;
+import org.marker.qqwryip.IPTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
+import java.util.Date;
+
+
+/**
+ * 后台管理主界面控制器
+ * @author marker
+ * 
+ * */
+@RestController
+@RequestMapping("/admin")
+public class AdminLoginController extends SupportController {
+
+	/** 日志记录器 */
+	private Logger logger =  LoggerFactory.getLogger(AdminLoginController.class);
+
+	@Autowired IUserDao userDao;
+	@Autowired IUserLoginLogDao userLoginLogDao;
+	@Autowired IMenuDao menuDao;
+	@Autowired
+	ServletContext application;
+	@Resource
+	private SystemConfig syscfg;
+
+
+
+
+	
+	/**
+	 * 子菜单接口
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/childmenus")
+	@ResponseBody
+	public Object menu(HttpServletRequest request, @RequestParam("id") int id){
+		ModelAndView view = new ModelAndView(this.viewPath+"childmenus");
+		view.addObject("menu",menuDao.findMenuById(id));
+		HttpSession session = request.getSession(false);
+		if(session != null){
+			try{
+				int groupId = (Integer) session.getAttribute(AppStatic.WEB_APP_SESSSION_USER_GROUP_ID);
+				view.addObject("childmenus",menuDao.findChildMenuByGroupAndParentId(groupId, id));
+			}catch (Exception e) {
+				log.error("因为没有登录，在主页就不能查询到分组ID");
+				return "<script>window.location.href='login.do?status=timeout';</script>";
+			} 
+		} 
+		return view;
+	}
+
+	
+	/**
+	 * 登录系统
+	 * 验证码不区分大小写
+	 * @return json
+	 * */
+	@PostMapping(value="/loginSystem")
+	public ResultMessage loginSystem(@RequestBody LoginRequestDTO loginRequestDTO, HttpServletRequest request){
+		String randcode = loginRequestDTO.getRandcode();//验证码
+		String username = loginRequestDTO.getUsername();
+		String password = loginRequestDTO.getPassword();
+		String device   = loginRequestDTO.getDevice();// 设备
+		HttpSession session = request.getSession();// 如果会话不存在也就创建
+		String serverValidCode = (String) session.getAttribute(AppStatic.WEB_APP_AUTH_CODE);
+		
+		int errorCode = 0;// 登录日志类型
+		if (serverValidCode == null) {
+			return new ResultMessage(false, "请填写验证码！");
+		}
+
+		ResultMessage msg = null;
+		if (!StringUtils.equalsIgnoreCase(serverValidCode, randcode)) {// 验证码不匹配
+			msg = new ResultMessage(false, "验证码错误!");
+			return msg;
+		}
+		String password2 = null;
+		try {
+			password2 = GeneratePass.encode(password);
+			User user = userDao.queryByNameAndPass(username, password2);
+			if(user != null){
+				if(user.getStatus() == 1){//启用
+					userDao.updateLoginTime(user.getId());// 更新登录时间
+					session.setAttribute(AppStatic.WEB_APP_SESSION_ADMIN, user);
+					session.setAttribute(AppStatic.WEB_APP_SESSSION_LOGINNAME, user.getNickname());
+					session.setAttribute(AppStatic.WEB_APP_SESSSION_USER_GROUP_ID, user.getGid());// 设置分组
+					session.setAttribute(AppStatic.USER_GROUP_ID, user.getGid());// 用户组
+					session.removeAttribute(AppStatic.WEB_APP_AUTH_CODE); //移除验证码
+					msg = new ResultMessage(true,"登录成功!");
+				}else{
+					errorCode = 1;
+					msg = new ResultMessage(false,"用户已禁止登录!");
+				}
+			}else{
+				errorCode = 1;
+				msg = new ResultMessage(false,"用户名或者密码错误!");
+			}
+		} catch (Exception e) {
+			errorCode = 1;
+			msg = new ResultMessage(false,"系统加密算法异常!");
+			log.error("系统加密算法异常!", e);
+		}
+
+		// 获取真实IP地址
+		String ip = HttpUtils.getRemoteIP(request);
+		
+		// IP归属地获取工具
+		IPTool ipTool = IPTool.getInstance();
+		
+		
+		
+		// 记录日志信息
+		UserLoginLog log = new UserLoginLog();
+		log.setUsername(username);
+		log.setTime(new Date());
+		
+		log.setDevice(device);
+		log.setInfo(msg.getMessage());
+		log.setIp(ip);
+		log.setErrorcode(errorCode);
+		if(ip != null){
+			try{
+				IPLocation location = ipTool.getLocation(ip);
+				if(location != null){// 如果存在
+					log.setArea(location.getCountry());
+				}
+			}catch(Exception e){
+				logger.error("ip={} ",ip, e);
+			}
+		}
+		 
+		userLoginLogDao.save(log); 
+		
+		return msg;
+	}
+	
+
+	
+}

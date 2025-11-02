@@ -1,5 +1,6 @@
 package org.marker.mushroom.config;
 
+import jakarta.servlet.Filter;
 import org.marker.mushroom.listener.SessionCounter;
 import org.marker.mushroom.servlet.CmsDispatcherServlet;
 import org.marker.mushroom.servlet.FetchServlet;
@@ -18,11 +19,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import java.util.Collections;
 
 
 @AutoConfigureOrder(Integer.MIN_VALUE)
@@ -99,24 +102,26 @@ public class WebConfig         {
 
 
 
-    @Bean
-    public ContentNegotiatingViewResolver contentNegotiatingViewResolver() {
-        return new ContentNegotiatingViewResolver();
-    }
+//    @Bean
+//    public ContentNegotiatingViewResolver contentNegotiatingViewResolver() {
+//        return new ContentNegotiatingViewResolver();
+//    }
 
 
-    @Bean
-    public FreeMarkerViewResolver viewResolver() {
-        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-        resolver.setCache(false);
-        resolver.setPrefix("");
-        resolver.setSuffix(".html");
-        resolver.setContentType("text/html; charset=utf-8");
-        resolver.setExposeSpringMacroHelpers(true);
-        resolver.setExposeRequestAttributes(true);
-        resolver.setExposeSessionAttributes(true);
-        resolver.setRequestContextAttribute("req");
-        return resolver;
-    }
+//    @Bean
+//    public FreeMarkerViewResolver viewResolver() {
+//        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
+//        resolver.setCache(false);
+//        resolver.setPrefix("");
+//        resolver.setSuffix(".html");
+//        resolver.setContentType("text/html; charset=utf-8");
+//        resolver.setExposeSpringMacroHelpers(true);
+//        resolver.setExposeRequestAttributes(true);
+//        resolver.setExposeSessionAttributes(true);
+//        resolver.setRequestContextAttribute("req");
+//        return resolver;
+//    }
+
+
 
 }

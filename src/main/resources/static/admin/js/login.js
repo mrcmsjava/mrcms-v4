@@ -59,8 +59,8 @@ function submitLogin(randcode){
 	$.ajax({
 		url: action,
 		contentType: "application/json",
-		type:"post",
-		dataType:"json",
+		type: "post",
+		dataType: "json",
 		data: JSON.stringify(params),
 		success: function(json){
 			if(json.status == true){

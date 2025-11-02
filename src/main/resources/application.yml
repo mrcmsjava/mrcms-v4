@@ -20,16 +20,20 @@ spring:
     name: mrcms
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false # 禁止将日期序列化为时间戳
   mvc:
-    async:
-      request-timeout: 30000
+    converters:
+      preferred-json-mapper: jackson
+
     contentnegotiation:
       favor-path-extension: true
+      default-content-types: application/json
     pathmatch:
       use-suffix-pattern: true
       use-registered-suffix-pattern: true
     servlet:
-      async-timeout: 30000
       load-on-startup: 2
       async-supported: true
   main:

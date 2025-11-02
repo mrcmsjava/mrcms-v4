@@ -1,6 +1,7 @@
 package org.marker.mushroom.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.marker.mushroom.interceptor.RequestParamsInterceptor;
@@ -13,8 +14,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
@@ -30,6 +34,7 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.WriteMapNullValu
 import static com.alibaba.fastjson.serializer.SerializerFeature.WriteNullNumberAsZero;
 
 @EnableWebMvc
+@EnableAsync
 @Configuration
 public class MyWebMvcConfigurer implements WebMvcConfigurer {
     @Override
@@ -39,10 +44,22 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         registry.freeMarker().suffix(".html");
 
     }
+
+
     ///受理.do请求，不发生302重定向
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.mediaType(".do", MediaType.ALL);
+        configurer
+                .favorParameter(false)
+                .parameterName("format")
+                .ignoreAcceptHeader(false)
+                .useRegisteredExtensionsOnly(false)
+                .defaultContentType(MediaType.APPLICATION_JSON)
+                .mediaType("json", MediaType.APPLICATION_JSON)
+                .mediaType("xml", MediaType.APPLICATION_XML)
+                .mediaType("html", MediaType.TEXT_HTML)
+                .mediaType("txt", MediaType.TEXT_PLAIN)
+                .mediaType(".do", MediaType.ALL);
     }
 
     @Override
@@ -78,20 +95,23 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     }
 
-    @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
-        converters.add(mappingJackson2HttpMessageConverter);
-    }
+//    @Override
+//    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+//        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+//        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
+//        converters.add(mappingJackson2HttpMessageConverter);
+//    }
 
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
-//        fastJsonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.TEXT_HTML));
-//        fastJsonHttpMessageConverter.setFeatures(WriteMapNullValue, WriteNullNumberAsZero);
-//        converters.add(fastJsonHttpMessageConverter);
+        FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
+        fastJsonHttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON,MediaType.TEXT_HTML));
+        fastJsonHttpMessageConverter.setFeatures(WriteMapNullValue, WriteNullNumberAsZero);
+        converters.add(fastJsonHttpMessageConverter);
+
+        converters.add(new StringHttpMessageConverter());
+        converters.add(new ByteArrayHttpMessageConverter());
     }
 
     /**
@@ -130,6 +150,6 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         // 设置异步支持，例如超时时间等
-        configurer.setDefaultTimeout(5000);
+//        configurer.setDefaultTimeout(5000);
     }
 }

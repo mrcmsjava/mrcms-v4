@@ -24,7 +24,7 @@ import java.io.PrintWriter;
  * */
 @WebFilter(
 		filterName = "11_LoginSystemFilter",
-		urlPatterns ={ "/admin/*","/plugin/*" })
+		urlPatterns ={ "/admin/*","/plugin/*" }, asyncSupported = true)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class ALoginSystemFilter implements Filter {
 

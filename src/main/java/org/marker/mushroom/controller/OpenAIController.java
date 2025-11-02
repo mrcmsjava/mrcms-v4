@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@EnableAsync
 @RestController
 @RequestMapping("/admin/openai")
 public class OpenAIController {
@@ -47,6 +46,7 @@ public class OpenAIController {
     public SseEmitter streamCompletion(
             @RequestBody AIModelPromptDTO aiModelPromptDTO, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/event-stream;charset=UTF-8");
         String provide = aiModelPromptDTO.getProvide();
         String model = aiModelPromptDTO.getModel();
         String prompt = aiModelPromptDTO.getPrompt();
@@ -99,9 +99,9 @@ public class OpenAIController {
                             System.out.print(chars);
                             JSONObject map = new JSONObject();
                             map.put("content", chars);
-                            emitter.send(map.toJSONString() );
+                            emitter.send(map.toJSONString(),MediaType.TEXT_PLAIN );
 
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             emitter.completeWithError(e);
                         }
                     });

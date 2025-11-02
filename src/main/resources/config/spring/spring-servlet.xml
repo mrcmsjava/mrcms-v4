@@ -55,14 +55,7 @@
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
  
     </bean>
-	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<ref bean="fastJsonHttpMessageConverter" />
-			</list>
-		</property>
-	</bean>
-
+ 
 
 
 

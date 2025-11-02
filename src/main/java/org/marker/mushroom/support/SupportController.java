@@ -58,6 +58,6 @@ public abstract class SupportController implements InitializingBean {
 		RequestMapping requestMapping = this.getClass().getAnnotation(RequestMapping.class);
 		String url = requestMapping.value()[0];
 		log.info("[{}] viewPath: {}", this.getClass().getSimpleName(), url);
-		this.viewPath = url;
+		this.viewPath = url + "/";
 	}
 }
