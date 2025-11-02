@@ -49,3 +49,8 @@ p {
         transform: scaleY(1);
     }
 }
+
+table {
+    border-collapse: collapse;
+    width: 100% !important;
+}
