@@ -51,7 +51,7 @@ steps:
       port: 22
       strip_components: 2
       target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
-      source: ./target/
+      source: ./target/mrcms-0.0.1-SNAPSHOT.jar
     when:
       branch:
         - dev

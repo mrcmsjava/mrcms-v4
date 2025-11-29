@@ -274,38 +274,50 @@
 				</configuration>
 			</plugin>
 
-			<!-- 在 build->plugins 部分添加 -->
-			<plugin>
-				<groupId>org.graalvm.buildtools</groupId>
-				<artifactId>native-maven-plugin</artifactId>
-				<version>0.11.0</version> <!-- 请检查最新版本 -->
-				<configuration>
-					<imageName>${project.artifactId}</imageName> <!-- 生成的可执行文件名称 -->
-					<mainClass>org.marker.mushroom.MrcmsApplication</mainClass> <!-- 你的主类完整路径 -->
-                    <!-- 设置输出目录 -->
-                    <outputDirectory>${project.basedir}/native</outputDirectory>
-					<buildArgs>
-						<arg>--no-fallback</arg> <!-- 要求生成完全原生的镜像 -->
-                        <arg>-march=compatibility</arg>
-						<arg>-Ob</arg> <!-- 启用符号表压缩 -->
-						<arg>--initialize-at-build-time=com.google.code.kaptcha</arg>
-                        <arg>--allow-incomplete-classpath</arg>
-                        <arg>--trace-object-instantiation=com.sun.jmx.mbeanserver.JmxMBeanServer</arg>
 
-                        <arg>-H:+ReportExceptionStackTraces</arg>
-                    </buildArgs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>build-native</id>
-						<goals>
-							<goal>compile-no-fork</goal> <!-- 使用 compile-no-fork -->
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <!-- 开发环境特定的插件配置 -->
+                    <!-- 在 build->plugins 部分添加 -->
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>0.11.0</version> <!-- 请检查最新版本 -->
+                        <configuration>
+                            <imageName>${project.artifactId}</imageName> <!-- 生成的可执行文件名称 -->
+                            <mainClass>org.marker.mushroom.MrcmsApplication</mainClass> <!-- 你的主类完整路径 -->
+                            <!-- 设置输出目录 -->
+                            <outputDirectory>${project.basedir}/native</outputDirectory>
+                            <buildArgs>
+                                <arg>--no-fallback</arg> <!-- 要求生成完全原生的镜像 -->
+                                <arg>-march=compatibility</arg>
+                                <arg>-Ob</arg> <!-- 启用符号表压缩 -->
+                                <arg>--initialize-at-build-time=com.google.code.kaptcha</arg>
+                                <arg>--allow-incomplete-classpath</arg>
+                                <arg>--trace-object-instantiation=com.sun.jmx.mbeanserver.JmxMBeanServer</arg>
+
+                                <arg>-H:+ReportExceptionStackTraces</arg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal> <!-- 使用 compile-no-fork -->
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
