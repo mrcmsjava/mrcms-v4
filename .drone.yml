@@ -35,7 +35,7 @@ steps:
       - dev
 
 
-  - name: scp to ${DRONE_BRANCH}
+  - name: scp jar to ${DRONE_BRANCH}
     image: nas.mrcms.cn:8082/appleboy/drone-scp
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     #    environment:
@@ -77,7 +77,7 @@ steps:
     branch:
       - native
 
-  - name: scp to ${DRONE_BRANCH}
+  - name: scp native to ${DRONE_BRANCH}
     image: nas.mrcms.cn:8082/appleboy/drone-scp
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
 #    environment:
