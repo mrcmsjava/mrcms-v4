@@ -26,14 +26,14 @@ public class ProfileConfig implements Serializable{
     /**
      * 配置文件路径
      */
-    private String config;
+    private String config = "config.properties";
 
 
     public String getConfig() {
         // 尝试获取 -Dmrcms.config 参数
         String mrcmsConfig = System.getProperty("mrcms.config");
         if (StringUtils.isNotBlank(mrcmsConfig)) {
-            this.config = "file:" + mrcmsConfig;
+            this.config = mrcmsConfig;
         }
         return config;
     }

@@ -1,5 +1,7 @@
 package org.marker.mushroom.config;
 
+import org.apache.commons.lang.StringUtils;
+import org.marker.mushroom.spring.ProfileConfig;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +9,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -39,10 +45,11 @@ public class CmsProfileConfig {
         return configurer;
     }
     @Bean
-    public PropertySourcesPlaceholderConfigurer preferencesPlaceholderConfigurer()     {
+    public PropertySourcesPlaceholderConfigurer preferencesPlaceholderConfigurer() throws IOException {
         PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
         configurer.setIgnoreResourceNotFound(true);
-        configurer.setLocations(new ClassPathResource("/config.properties") );
+        configurer.setProperties(configProperties());
+//        configurer.setLocations(new ClassPathResource("/config.properties") );
         return configurer;
     }
 
@@ -50,10 +57,23 @@ public class CmsProfileConfig {
     public Properties configProperties() throws IOException {
         PropertiesFactoryBean factoryBean = new PropertiesFactoryBean();
         factoryBean.setIgnoreResourceNotFound(true);
-        factoryBean.setLocations(new ClassPathResource("/config.properties"), new FileSystemResource("/etc/mrcms/config.properties"));
+
+        List<Resource> resources = new ArrayList();
+        resources.add(new ClassPathResource("/config.properties"));
+        resources.add(new FileSystemResource("/etc/mrcms/config.properties"));
+        String outConfigFile = profileConfig().getConfig();
+        if(StringUtils.isNotBlank(outConfigFile)){
+            resources.add(new FileSystemResource(outConfigFile));
+        }
+        factoryBean.setLocations(resources.toArray(new Resource[0]));
         // 调用 getObject 方法获取 Properties 对象
         factoryBean.afterPropertiesSet();
         return factoryBean.getObject();
     }
 
+
+    @Bean
+    public ProfileConfig profileConfig() {
+        return new ProfileConfig();
+    }
 }
