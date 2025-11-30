@@ -220,7 +220,7 @@ public class InitBuilderHolder implements ServletContextAware{
 			try {
 				ModuleFramework moduleFramework = new ModuleFramework(configMap);
 				ModuleContext context = moduleFramework.getModuleContext();
-//				moduleFramework.start();
+				moduleFramework.start();
 
 				context.addInstallListener(new InstallListenter(){
 
