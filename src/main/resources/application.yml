@@ -4,12 +4,6 @@
 server:
   port: ${SERVER_PORT:8080}
 
-MRCMS_MYSQL_HOST: 192.168.1.6
-MRCMS_MYSQL_PORT: 3306
-MRCMS_MYSQL_DATABASE: pancha_cms
-MRCMS_MYSQL_USERNAME: pancha_cms
-MRCMS_MYSQL_PASSWORD: mfNfseXLPt3ATeFA
-SERVER_PORT: 8081
 
 spring:
   servlet:
@@ -47,9 +41,9 @@ spring:
       classic_compatible=true:  # 数据库配置
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MRCMS_MYSQL_HOST:bullet-server}:${MRCMS_MYSQL_PORT:3306}/${MRCMS_MYSQL_DATABASE:db_bullet}?useUnicode=true&serverTimezone=GMT%2B8&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
-    username: ${MRCMS_MYSQL_USERNAME:root}
-    password: ${MRCMS_MYSQL_PASSWORD:123456}
+    url: jdbc:mysql://${mushroom.db.host}:${mushroom.db.port}/${mushroom.db.demo}?useUnicode=true&serverTimezone=GMT%2B8&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${mushroom.db.user}
+    password: ${mushroom.db.pass}
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       connection-timeout: 30000
@@ -62,7 +56,7 @@ logging:
   level:
     root: debug
 
-
+# 验证码
 kaptcha:
   height: 50
   width: 200
