@@ -1,16 +1,14 @@
 package org.marker.mushroom.template;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marker.mushroom.template.tags.res.WebDataSource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 
 /**
@@ -39,7 +37,8 @@ public class TemplateFileLoad {
 
 	/** 模板文件集合 */
 	private List<File> files = new ArrayList<File>(5);
-	
+	private List<Resource> resources = new ArrayList<>(5);
+
 	/** 解析出的sql集合 */
 	private List<WebDataSource> sqls = new ArrayList<WebDataSource>();
 	
@@ -54,9 +53,9 @@ public class TemplateFileLoad {
 		load(file);
 		this.readModified = lastModified();// 读取时间
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 逐行加载模板文件内容
 	 * @param tplFile

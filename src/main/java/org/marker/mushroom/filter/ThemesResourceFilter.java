@@ -30,7 +30,7 @@ import java.io.InputStream;
  *
  * @author marker
  */
-@WebFilter(urlPatterns = {"/themes/*", "/upload/*"})
+@WebFilter(urlPatterns = {   "/upload/*"})
 @Order(Ordered.HIGHEST_PRECEDENCE + 10000)
 public class ThemesResourceFilter implements Filter {
 

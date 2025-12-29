@@ -409,8 +409,8 @@ public abstract class DaoEngine implements ISupportDao {
 	}
 
 
-	@Autowired
-	PropertyPlaceholderConfigurer propertyPlaceholderConfigurer;
+//	@Autowired
+//	PropertyPlaceholderConfigurer propertyPlaceholderConfigurer;
 
 
 

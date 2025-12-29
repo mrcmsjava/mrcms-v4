@@ -4,8 +4,10 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.interceptor.RequestParamsInterceptor;
 import org.marker.mushroom.interceptor.SignInterceptor;
+import org.marker.mushroom.utils.SpringUtils;
 import org.marker.urlrewrite.freemarker.FrontURLRewriteMethodModel;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,6 +29,7 @@ import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -37,12 +41,13 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.WriteNullNumberA
 @EnableAsync
 @Configuration
 public class MyWebMvcConfigurer implements WebMvcConfigurer {
+
+
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         registry.freeMarker().cache(true);
         registry.freeMarker().prefix("");
         registry.freeMarker().suffix(".html");
-
     }
 
 
@@ -87,11 +92,26 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**").addResourceLocations("/upload/");
-        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/robots.txt").addResourceLocations("classpath:/static/robots.txt");
-        registry.addResourceHandler("/install/**").addResourceLocations("classpath:/templates/content/");
+
+        SystemConfig syscfg = SystemConfig.getInstance();
+        String themesPath = String.format("file:/%s",syscfg.getThemesPath());
+
+        List<ResourceHandlerRegistration> resourceHandlerRegistrationList = new ArrayList<>();
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/upload/**").addResourceLocations("/upload/"));
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/public/**").addResourceLocations("classpath:/static/"));
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/"));
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/robots.txt").addResourceLocations("classpath:/static/robots.txt"));
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/install/**").addResourceLocations("classpath:/templates/content/"));
+        resourceHandlerRegistrationList.add(registry.addResourceHandler("/themes/**")
+                .addResourceLocations("classpath:/templates/", themesPath)
+        );
+
+        if (SpringUtils.isDev()) {
+            resourceHandlerRegistrationList.forEach(item->{
+                item.setCachePeriod(0); // 开发环境关闭缓存
+                item.setCacheControl(CacheControl.noCache());
+            });
+        }
 
     }
 

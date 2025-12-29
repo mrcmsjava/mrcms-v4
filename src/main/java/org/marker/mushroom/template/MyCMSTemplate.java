@@ -16,7 +16,8 @@ import org.marker.mushroom.template.tags.res.WebDataSource;
 import org.marker.mushroom.utils.FileTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,8 @@ import java.util.*;
  * */
 @Service(Core.ENGINE_TEMPLATE)
 public class MyCMSTemplate {
-	
+
+	private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 	/** 日志记录对象 */ 
 	protected Logger logger =  LoggerFactory.getLogger(MyCMSTemplate.class);
 
@@ -60,7 +62,7 @@ public class MyCMSTemplate {
 	public List<WebDataSource> temp;
 	
 	// 存放模版读取时间，为是否更新JSP提供依据
-	private Map<String, TemplateFileLoad> tplCache = Collections.synchronizedMap(new HashMap<String, TemplateFileLoad>());
+	private Map<String, TemplateResourceLoad> tplCache = Collections.synchronizedMap(new HashMap<String, TemplateResourceLoad>());
 
 	@Resource
 	public void setConfig(WebFreeMarkerConfigurer webFrontConfiguration  ) {
@@ -86,32 +88,33 @@ public class MyCMSTemplate {
 			logger.error("", e);
 		}
 
+		String tplFile = new StringBuilder(themeName).append(File.separator).append(tplFileName).toString();
 		// 配置了制定的主题路径
 		String themesPath = syscfg.getThemesPath();
 		// 构造模模版路径
-		StringBuilder tplFilePath = new StringBuilder(themesPath);
-		tplFilePath.append(File.separator).append(themeName).append(File.separator).append(tplFileName);
+		String  tplFilePath = new StringBuilder(themesPath).append(File.separator).append(tplFile).toString();
 
-		File tplFile = new File(tplFilePath.toString());//模板文件 
+		org.springframework.core.io.Resource resource = resourceLoader.getResource(tplFilePath);
+
 		
-		logger.error(tplFile.getPath());
+		logger.error(resource.getURI().toString());
 		
 		// 如果模板文件存在 检查是否修改 
 		synchronized(this){
 			if(syscfg.isdevMode()){//如果是开发模式，每次获取都将会编译
 				logger.info("[develop mode] ");
 				config.clearTemplateCache();// 清除缓存
-				compile(tplFileName, tplFile);
+				compile(tplFileName, resource);
 			}else{
-				TemplateFileLoad tplModel = tplCache.get(tplFileName);
+				TemplateResourceLoad tplModel = tplCache.get(tplFileName);
 				if(null != tplModel){
 					long rt = tplModel.getReadModified();//获取读取时间
 					long mt = tplModel.lastModified();// 获取修改时间
 					if (mt > rt) {// 模板文件被修改了滴
-						compile(tplFileName, tplFile);
+						compile(tplFileName, resource);
 					}
 				}else{
-					compile(tplFileName,tplFile);
+					compile(tplFileName,resource);
 				}
 			}
 		}
@@ -126,38 +129,23 @@ public class MyCMSTemplate {
 	 * @throws SystemException 
 	 * @throws IOException 
 	 * */
-	private void compile(String tplFileName, File tplFile) throws SystemException, IOException{
+	private void compile(String tplFileName, org.springframework.core.io.Resource resource) throws SystemException, IOException{
 		logger.info("compiling template file " + tplFileName + " to cache");
 		SystemConfig syscfg = SystemConfig.getInstance();
 		
 		//第一步：加载模板内容
-		TemplateFileLoad tplloader = null;
+		TemplateResourceLoad tplloader = null;
 		try {
-			tplloader = new TemplateFileLoad(tplFile);
+			tplloader = new TemplateResourceLoad(resource);
 		} catch (FileNotFoundException e){
-			throw new FileNotFoundException(tplFile.getAbsolutePath());
+			throw new FileNotFoundException(resource.getURI().toString());
 		}
-
-        String themesPath = syscfg.getThemesPath();// 主题文件夹
-
-
-
 
         StringBuilder templateContent = tplloader.getContentBuffer();
 
-
         // 通用函数（freemarker宏）头部
-		StringBuilder tplFilePath = new StringBuilder(themesPath )
-                .append(File.separator).append("common").append(File.separator).append("function.ftl");
+		templateContent.insert(0, "<#macro message code>${mrcmsMessageResourceContext[code]!}</#macro>");
 
-		File functionFile = new File(tplFilePath.toString());
-		if(functionFile.exists()){
-            String functionTemplateString = FileTools.getFileContet(functionFile, FileTools.FILE_CHARACTER_UTF8);
-            // 插入到头部
-            templateContent.insert(0,functionTemplateString);
-        }
-		
-		
 		// 创建一个StringBuffer
 		this.temp = new ArrayList< >(); // 创建此模板页面的数据池
 		String sbc = replaceTaglib(templateContent.toString());// 全部标签解析

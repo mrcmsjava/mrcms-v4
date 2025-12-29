@@ -1,6 +1,10 @@
 package org.marker.mushroom.utils;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +84,14 @@ public class FileUtils {
         }
     }
 
-
+    public static String getResourceFile(String filePath) {
+        try {
+            ClassPathResource resource = new ClassPathResource(filePath);
+            byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("读取SQL文件失败: " + filePath, e);
+        }
+    }
 
 }

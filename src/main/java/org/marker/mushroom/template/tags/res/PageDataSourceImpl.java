@@ -1,9 +1,7 @@
 package org.marker.mushroom.template.tags.res;
 
 import org.marker.mushroom.alias.SQL;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
 import org.marker.mushroom.core.exception.SystemException;
-import org.springframework.util.StringUtils;
 
 
 /**

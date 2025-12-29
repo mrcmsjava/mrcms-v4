@@ -1,6 +1,6 @@
 package pancha.src
 
-import org.marker.mushroom.core.config.impl.DataBaseConfig
+import org.marker.mushroom.core.config.impl.SystemBaseConfig
 import org.marker.mushroom.dao.ICommonDao
 import org.marker.mushroom.utils.SpringUtils
 import org.marker.weixin.DefaultSession
@@ -25,7 +25,7 @@ public class PanchaAutoReplayHandleMessageListener extends HandleMessageAdapter 
 
         ICommonDao commonDao = SpringUtils.getBean(ICommonDao.class)
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
         String prefix = dbcfg.getPrefix();
         String sql = """select p.id as pId,p.keywords pKeywords,p.type as pType, p.pwd as pPwd, p.url from ${prefix}pancha p 
          where p.keywords = ?

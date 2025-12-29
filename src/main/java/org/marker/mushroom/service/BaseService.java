@@ -1,6 +1,6 @@
 package org.marker.mushroom.service;
 
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +21,6 @@ public class BaseService {
 	protected Logger logger =  LoggerFactory.getLogger(BaseService.class);
 	
 	/** 数据库配置 */
-	protected DataBaseConfig config = DataBaseConfig.getInstance(); 
+	protected SystemBaseConfig config = SystemBaseConfig.getInstance();
 	
 }

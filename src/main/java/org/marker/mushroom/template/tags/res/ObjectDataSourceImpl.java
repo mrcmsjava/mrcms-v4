@@ -1,7 +1,7 @@
 package org.marker.mushroom.template.tags.res;
 
 import org.marker.mushroom.alias.SQL;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.exception.SystemException;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +31,7 @@ public final class ObjectDataSourceImpl extends WebDataSource{
 	 * */
 	@Override
 	public void generateSql() throws SystemException{
-		String prefix = DataBaseConfig.getInstance().getPrefix();//表前缀，如："yl_"
+		String prefix = SystemBaseConfig.getInstance().getPrefix();//表前缀，如："yl_"
 		
 		StringBuilder queryString = new StringBuilder();
 		queryString.append(SQL.QUERY_FOR_FORM).append(prefix)

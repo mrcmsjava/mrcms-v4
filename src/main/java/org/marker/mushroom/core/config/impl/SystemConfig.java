@@ -7,9 +7,11 @@ import org.marker.mushroom.core.config.ConfigDBEngine;
 import org.marker.mushroom.core.config.annotation.IgnoreCopyProperties;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.holder.WebRealPathHolder;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.annotation.Resource;
 import java.io.File;
 
 
@@ -22,6 +24,7 @@ import java.io.File;
 @NoArgsConstructor
 public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 
+	private static final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	
 	
@@ -168,9 +171,14 @@ public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 	public String getThemesPath(){
         String themesPath = this.properties.getProperty(THEMES_PATH);
         if(StringUtils.isEmpty(themesPath)){
-            return WebRealPathHolder.REAL_PATH + "themes";
+            return "classpath:/templates/themes";
         }
     	return themesPath;
+	}
+
+	public Resource getThemesPathResource(){
+		return resourceLoader.getResource(getThemesPath());
+
 	}
 
 	/**

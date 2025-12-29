@@ -35,8 +35,6 @@ public class JacksonConfig {
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
         // 使用较新的Jackson2ObjectMapperBuilderCustomizer接口
         return builder -> {
-
-
             builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 //            builder
 //                .serializerByType(Long.class, ToStringSerializer.instance)

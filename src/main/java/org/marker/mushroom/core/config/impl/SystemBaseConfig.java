@@ -2,46 +2,54 @@ package org.marker.mushroom.core.config.impl;
 
 import org.marker.mushroom.core.config.ConfigEngine;
 import org.marker.mushroom.holder.SpringContextHolder;
+import org.marker.mushroom.utils.StringUtil;
 
 import java.io.IOException;
 import java.util.Properties;
 
 /**
- * 数据库动态配置
+ * 系统基本配置（包含数据库的配置、缓存配置等）
  * 
  * 说明：获取数据库链接信息的途径
  * 实现：继承ConfigEngine实现的
  * 
  * @author marker
  * */
-public class DataBaseConfig extends ConfigEngine {
+public class SystemBaseConfig extends ConfigEngine {
 
 	// 表前缀变量
 	public static final String DB_TABLE_PREFIX = "mushroom.db.prefix";
-	
+
+	/**
+	 * 默认的系统基础配置文件
+	 */
+	public static final String DEFAULT_CUSTOM_CONFIG_FILE = "/etc/mrcms/config.properties";
+
 
 	/**
 	 * 默认构造方法
 	 * @throws IOException 
 	 * */
-//	private DataBaseConfig() {
-//		super();
-//	}
+	public SystemBaseConfig() {
+		super(getCustomConfigFile());
+	}
 
-	
-	/**
-	 * 这种写法最大的美在于，完全使用了Java虚拟机的机制进行同步保证。
-	 * */
-	private static DataBaseConfig instance;
-	
 	
 	/**
 	 * 获取数据库配置实例
 	 * */
-	public static DataBaseConfig getInstance() {
-		return SpringContextHolder.getApplicationContext().getBean(DataBaseConfig.class);
+	public static SystemBaseConfig getInstance() {
+		return SpringContextHolder.getApplicationContext().getBean(SystemBaseConfig.class);
 	}
-	
+
+	/**
+	 * 获取自定义配置文件
+	 * @return
+	 */
+	public static String getCustomConfigFile(){
+		String baseConfigFile =  System.getProperty("mrcms.config");
+		return StringUtil.isBlank(baseConfigFile)? DEFAULT_CUSTOM_CONFIG_FILE: baseConfigFile;
+	}
 	
 	/**
 	 * 获取表前缀

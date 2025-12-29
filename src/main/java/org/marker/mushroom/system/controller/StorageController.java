@@ -4,7 +4,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import lombok.extern.slf4j.Slf4j;
 import org.marker.mushroom.beans.ResultMessage;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.config.impl.StorageConfig;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.core.config.impl.URLRewriteConfig;
@@ -143,7 +143,7 @@ public class StorageController extends SupportController {
 	@RequestMapping("/dbinfo")
 	public ModelAndView dbinfo(HttpServletRequest request){
 		ModelAndView view = new ModelAndView(this.viewPath + "dbinfo");
-		DataBaseConfig dbconfig = DataBaseConfig.getInstance();
+		SystemBaseConfig dbconfig = SystemBaseConfig.getInstance();
 		Properties configClone = (Properties) dbconfig.getProperties().clone();
  
 		String pass = configClone.getProperty("mushroom.db.pass");
@@ -176,7 +176,7 @@ public class StorageController extends SupportController {
 	@ResponseBody
 	@RequestMapping("/savedbinfo")
 	public Object savedbinfo(HttpServletRequest request){
-		DataBaseConfig config = DataBaseConfig.getInstance();
+		SystemBaseConfig config = SystemBaseConfig.getInstance();
 		String oldPass = config.get("mushroom.db.pass");
 		String newpass = request.getParameter("sql.pass");
 		

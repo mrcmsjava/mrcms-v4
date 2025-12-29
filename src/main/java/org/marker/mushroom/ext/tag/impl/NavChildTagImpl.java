@@ -17,7 +17,7 @@ package org.marker.mushroom.ext.tag.impl;
 
 import org.marker.mushroom.alias.Core;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.exception.SystemException;
 import org.marker.mushroom.ext.tag.MatchRule;
 import org.marker.mushroom.ext.tag.Taglib;
@@ -89,7 +89,7 @@ public class NavChildTagImpl extends Taglib {
 			String pageName = param.pageName;
 			int id  = param.channel.getId();
 			int cid = param.channel.getId();
-            DataBaseConfig config = DataBaseConfig.getInstance();
+            SystemBaseConfig config = SystemBaseConfig.getInstance();
 
 			long pid = param.channel.getPid();
 			String sql = "select *,id = "+cid + " as active, concat('p=', url) url from "+config.getPrefix()

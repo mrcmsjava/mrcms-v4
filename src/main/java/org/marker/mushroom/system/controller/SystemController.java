@@ -5,7 +5,7 @@ import groovy.lang.GroovyShell;
 import org.marker.mushroom.alias.CacheO;
 import org.marker.mushroom.alias.Core;
 import org.marker.mushroom.beans.ResultMessage;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.core.config.impl.URLRewriteConfig;
 import org.marker.mushroom.ext.message.MessageDBContext;
@@ -20,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +32,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -224,7 +230,7 @@ public class SystemController extends SupportController {
 	@RequestMapping("/dbinfo")
 	public ModelAndView dbinfo(HttpServletRequest request){
 		ModelAndView view = new ModelAndView(this.viewPath + "dbinfo");
-		DataBaseConfig dbconfig = DataBaseConfig.getInstance();
+		SystemBaseConfig dbconfig = SystemBaseConfig.getInstance();
 		Properties configClone = (Properties) dbconfig.getProperties().clone();
  
 		String pass = configClone.getProperty("mushroom.db.pass");
@@ -257,7 +263,7 @@ public class SystemController extends SupportController {
 	@ResponseBody
 	@RequestMapping("/savedbinfo")
 	public Object savedbinfo(HttpServletRequest request){
-		DataBaseConfig config = DataBaseConfig.getInstance();
+		SystemBaseConfig config = SystemBaseConfig.getInstance();
 		String oldPass = config.get("mushroom.db.pass");
 		String newpass = request.getParameter("sql.pass");
 		
@@ -294,6 +300,8 @@ public class SystemController extends SupportController {
 	}
 
 
+	@Resource
+	private ResourceLoader resourceLoader;
 	
 	
 	/**
@@ -301,51 +309,68 @@ public class SystemController extends SupportController {
 	 *
 	 */
 	@RequestMapping("/themes")
-	public @ResponseBody Object themes(HttpServletRequest request){ 
+	public @ResponseBody Object themes(HttpServletRequest request) throws IOException {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-
-
 		String themesPath = config.getThemesPath();
-        File file = new File(themesPath);
-        String[] filelist = file.list();
 
-		for(String themeName : filelist ){
+		if (themesPath.startsWith("classpath:")) {
+			// 获取 ResourcePatternResolver
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+			org.springframework.core.io.Resource[] siblingResources =  resolver.getResources(themesPath+File.separator+"*");
 
-			String config = themesPath + File.separator +themeName+File.separator  + "config.groovy";
-			
-			try {
-				
-				File f = new File(config);
-				if(f.exists()){// 如果配置文件存在 
-					String groovyScript = FileTools.getFileContet(f, FileTools.FILE_CHARACTER_UTF8);
-					
-					 
-					Binding bind = new Binding(); 
+			for(org.springframework.core.io.Resource themePath : siblingResources ){
+				String themeName = themePath.getFilename();
+				org.springframework.core.io.Resource con = themePath.createRelative(themeName+File.separator+"config.groovy");
+
+				try {
+					String groovyScript = con.getContentAsString(StandardCharsets.UTF_8);
+					Binding bind = new Binding();
 					GroovyShell gs = new GroovyShell(bind);
-					gs.evaluate(groovyScript); 
-					
+					gs.evaluate(groovyScript);
 					@SuppressWarnings("unchecked")
 					Map<String, String> themecfg = (Map<String, String>) bind.getVariable("_config");
-					
-					 
 					String icon = themecfg.get("icon");
-					
-					
 					String website = HttpUtils.getRequestURL(request);
-					
 					String iconpath = website+"/themes/"+themeName+"/"+icon;
-					 
 					themecfg.put("icon", iconpath);
-					themecfg.put("path", themeName); 
+					themecfg.put("path", themeName);
 					list.add(themecfg);
+
+
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
+
 			}
-			
-		} 
-		return list; 
+			return list;
+		}else{
+			File file = new File(themesPath);
+			String[] filelist = file.list();
+			for(String themeName : filelist ){
+				String config = themesPath + File.separator +themeName+File.separator  + "config.groovy";
+				try {
+					File f = new File(config);
+					if(f.exists()){// 如果配置文件存在
+						String groovyScript = FileTools.getFileContet(f, FileTools.FILE_CHARACTER_UTF8);
+						Binding bind = new Binding();
+						GroovyShell gs = new GroovyShell(bind);
+						gs.evaluate(groovyScript);
+						@SuppressWarnings("unchecked")
+						Map<String, String> themecfg = (Map<String, String>) bind.getVariable("_config");
+						String icon = themecfg.get("icon");
+						String website = HttpUtils.getRequestURL(request);
+						String iconpath = website+"/themes/"+themeName+"/"+icon;
+						themecfg.put("icon", iconpath);
+						themecfg.put("path", themeName);
+						list.add(themecfg);
+					}
+				} catch (Exception e) {
+					log.error("", e);
+				}
+			}
+			return list;
+		}
 		
 	}
 

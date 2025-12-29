@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.alias.DAO;
 import org.marker.mushroom.beans.GuestBook;
 import org.marker.mushroom.beans.ResultMessage;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.dao.ISupportDao;
 import org.marker.mushroom.ext.plugin.Pluginlet;
 import org.marker.mushroom.holder.SpringContextHolder;
@@ -62,7 +62,7 @@ public class GuestBookPluginletImpl extends Pluginlet {
         }catch(Exception e){ }
         ISupportDao dao = SpringContextHolder.getBean(DAO.COMMON);
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
 
         String sql = "select * from "+ dbcfg.getPrefix()  +"guestbook order by id desc";
         request.setAttribute("page",  dao.findByPage(currentPageNo, 20, sql));
@@ -123,7 +123,7 @@ public class GuestBookPluginletImpl extends Pluginlet {
         }
 
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
 
 
 //        if(randauthcode != null && randauthcode.toLowerCase().equals(code.toLowerCase())){
@@ -166,7 +166,7 @@ public class GuestBookPluginletImpl extends Pluginlet {
         int id = Integer.parseInt(idStr);
 
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
 
 
         String sql = "update "+dbcfg.getPrefix()+"guestbook set status=1 where id=?";

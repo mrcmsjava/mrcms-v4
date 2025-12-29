@@ -3,10 +3,9 @@
  */
 package org.marker.mushroom.template.tags.res;
 
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.exception.SystemException;
 import org.marker.mushroom.ext.model.ContentModelContext;
-import org.springframework.util.StringUtils;
 
 /**
  *
@@ -144,7 +143,7 @@ public abstract class WebDataSource {
      * @return String
      */
 	public String getSystemPrefix(){
-        return  DataBaseConfig.getInstance().getPrefix();
+        return  SystemBaseConfig.getInstance().getPrefix();
     }
 
 

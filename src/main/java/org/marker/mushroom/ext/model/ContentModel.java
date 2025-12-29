@@ -7,11 +7,10 @@ import org.marker.mushroom.alias.DAO;
 import org.marker.mushroom.beans.Channel;
 import org.marker.mushroom.beans.Page;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.proxy.SingletonProxyFrontURLRewrite;
 import org.marker.mushroom.dao.ISupportDao;
 import org.marker.mushroom.holder.SpringContextHolder;
-import org.marker.mushroom.template.tags.res.WebDataSource;
 import org.marker.mushroom.template.tags.res.WebDataSource;
 import org.marker.urlrewrite.URLRewriteEngine;
 
@@ -42,7 +41,7 @@ public abstract class ContentModel{
 	public ISupportDao commonDao;
 
 
-    protected DataBaseConfig dbconfig = DataBaseConfig.getInstance();
+    protected SystemBaseConfig dbconfig = SystemBaseConfig.getInstance();
 	
 	/** 内容模型配置信息 */
 	protected Map<String,Object> config;
@@ -92,7 +91,7 @@ public abstract class ContentModel{
 	 * @return
 	 */
 	public String getPrefix(){
-		DataBaseConfig dbconfig = DataBaseConfig.getInstance();
+		SystemBaseConfig dbconfig = SystemBaseConfig.getInstance();
 		return dbconfig.getPrefix();
 	}
 

@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.marker.mushroom.core.IChip;
 import org.marker.mushroom.core.SystemStatic;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.dao.ISupportDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class ChipContext implements IChip{
 	 
 	public synchronized void syn(){
 		if(!isSyn){
-			String prefix = DataBaseConfig.getInstance().getPrefix();
+			String prefix = SystemBaseConfig.getInstance().getPrefix();
 			List<Map<String, Object>> list = commonDao.queryForList("select * from "+prefix+"chip");
 			data = new HashMap<String, Object>();
 			for(Map<String, Object> o: list){

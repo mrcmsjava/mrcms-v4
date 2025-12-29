@@ -1,12 +1,7 @@
 package org.marker.mushroom.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.beans.*;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
-import org.marker.mushroom.dao.IPermissionDao;
-import org.marker.mushroom.dao.IUserDao;
 import org.marker.mushroom.dao.LinkDao;
-import org.marker.mushroom.dao.UserGroupChannelDao;
 import org.marker.mushroom.support.SupportController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,10 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**

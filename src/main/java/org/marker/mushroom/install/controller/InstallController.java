@@ -1,4 +1,4 @@
-package org.marker.mushroom.controller;
+package org.marker.mushroom.install.controller;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -6,20 +6,20 @@ import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.core.AppStatic;
 import org.marker.mushroom.core.DataSourceProxy;
 import org.marker.mushroom.core.config.ConfigDBEngine;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.core.domain.MessageResult;
 import org.marker.mushroom.ext.message.MessageDBContext;
 import org.marker.mushroom.holder.SpringContextHolder;
-import org.marker.mushroom.spring.ProfileConfig;
+import org.marker.mushroom.install.domain.InstallParams;
 import org.marker.mushroom.support.SupportController;
-import org.marker.mushroom.utils.FileTools;
-import org.marker.mushroom.utils.GeneratePass;
-import org.marker.mushroom.utils.HttpUtils;
-import org.marker.mushroom.utils.WebUtils;
+import org.marker.mushroom.utils.*;
 import org.marker.security.DES;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,6 +34,8 @@ import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Map;
+
+import static org.marker.mushroom.core.DataSourceProxy.DATASOURCE_PROXY_BEAN_NAME;
 
 
 /**
@@ -87,29 +89,36 @@ public class InstallController extends SupportController {
         return view;
     }
 
+    /**
+     * 获取配置文件中的驱动
+     */
+    @Value("${spring.datasource.driverClassName}")
+    private String driverClassName;
 
     /**
      * 数据库检查
      */
-    @RequestMapping(value = "/check", method = RequestMethod.POST)
+    @RequestMapping(value = "/check", method = RequestMethod.POST )
     @ResponseBody
-    public MessageResult check(HttpServletRequest request, HttpServletResponse response) throws NoSuchAlgorithmException {
+    public MessageResult check(@RequestBody InstallParams installParams, HttpServletRequest request, HttpServletResponse response) throws NoSuchAlgorithmException {
         if (WebUtils.checkInstall()) {
             response.setStatus(404);
             return null;
         }
+        SpringUtils.getBean(DataSourceProxy.class); // 检查是否存在代理，方便判断bean是否就绪
+
         Connection conn = null;
         try {
-            String host = request.getParameter("DB_HOST");
-            String port = request.getParameter("DB_PORT");
-            String user = request.getParameter("DB_USER");
-            String password = request.getParameter("DB_PWD");
-
+            String host = installParams.getDbHost();
+            int port = Integer.valueOf(installParams.getDbPort());
+            String user = installParams.getDbUser();
+            String password = installParams.getDbPassword();
 
             String url = "jdbc:mysql://" + host + ":" + port + "/" + "?useUnicode=true&characterEncoding=UTF-8";
-            Class.forName("org.gjt.mm.mysql.Driver");
+            Class.forName(driverClassName);
 
             conn = DriverManager.getConnection(url, user, password);
+            conn.createStatement().execute("select sysdate();");
             return MessageResult.success();
         } catch (Exception e) {
             log.error("数据库连接失败！{}", e.getMessage());
@@ -170,35 +179,11 @@ public class InstallController extends SupportController {
                  *              1. 获取数据库链接
                  * ==============================================
                  */
-                String driverClassName = "org.gjt.mm.mysql.Driver";
                 Class.forName(driverClassName);
-
                 Connection conn = DriverManager.getConnection(jdbcurl, user, pass);
 
-
-
-                /* ==============================================
-                 *              2. 数据库设置持久化
-                 * ==============================================
-                 */
-                File file = new File( WebRootRealPath + "WEB-INF/classes/config.properties");
-                ProfileConfig profileConfig = context.getBean(ProfileConfig.class);
-                String configFile = profileConfig.getConfig();
-                if (configFile.startsWith("file:")) {
-                    file = new File(configFile.substring(5));
-                }
-                DataBaseConfig dbc = DataBaseConfig.getInstance();
-                dbc.read(file);
-                dbc.set("mushroom.db.host", host);
-                dbc.set("mushroom.db.port", port);
-                dbc.set("mushroom.db.demo", name);
-                dbc.set("mushroom.db.user", user);
-                dbc.set("mushroom.db.pass", pass);
-                dbc.set("mushroom.db.prefix", prefix);
-                dbc.store();//保存
-
                 /* =======================================================
-                 *   3. 获取数据库链接，并判断数据库是否存在，不存在就创建
+                 *   2. 获取数据库链接，并判断数据库是否存在，不存在就创建
                  * =======================================================
                  */
                 String checkAndCreateSql = "CREATE database IF NOT EXISTS " + name;
@@ -206,15 +191,14 @@ public class InstallController extends SupportController {
                 ps.executeUpdate();
                 ps.close();
 
-
-
                 /* =======================================================
-                 *   4. 读取建表SQL信息，并创建表
+                 *   3. 读取建表SQL信息，并创建表
                  * =======================================================
                  */
-                File sqlFile = new File(WebRootRealPath + "/data/sql/db_app.sql");
-                String sql = FileTools.getFileContet(sqlFile, FileTools.FILE_CHARACTER_UTF8);
+                String sql = FileUtils.getResourceFile("/data/sql/db_app.sql");
                 sql = sql.replaceAll("`mr_", "`"+prefix);//替换前缀
+                sql = sql.replace("\r\n","\n"); // 统一转换unix换行格式
+                sql = sql.replace("\r","\n"); // 统一转换unix换行格式
 //                System.out.println(sql);
 
                 String[] sqla = sql.split(";\n");
@@ -224,8 +208,8 @@ public class InstallController extends SupportController {
                 for (int i = 0; i < sqla.length; i++) {
                     String a = sqla[i];
                     if (a != null && !"".equals(a.trim())) {
-                        log.info("{}", a);
-                        statement.execute(a);
+                        log.info("SQL_{}:{}", (i+1),a);
+                        statement.executeLargeUpdate(a);
                     }
                 }
                 log.info("===========SQL执行完成===========");
@@ -236,14 +220,14 @@ public class InstallController extends SupportController {
                  *   5. 数据库链接
                  * =======================================================
                  */
-               HikariDataSource dataSource = new HikariDataSource();
+                HikariDataSource dataSource = new HikariDataSource();
                 dataSource.setDriverClassName(driverClassName);
                 dataSource.setJdbcUrl(jdbcDBurl);
                 dataSource.setUsername(user);
                 dataSource.setPassword(pass);
-                dataSource.setMaximumPoolSize(Integer.parseInt(dbc.getProperties().getProperty("mushroom.druid.maxActive")));
-                dataSource.setMinimumIdle(Integer.parseInt(dbc.getProperties().getProperty("mushroom.druid.initialSize")));
-                DataSourceProxy proxy = SpringContextHolder.getBean("dataSource");
+//                dataSource.setMaximumPoolSize(Integer.parseInt(dbc.getProperties().getProperty("mushroom.druid.maxActive")));
+//                dataSource.setMinimumIdle(Integer.parseInt(dbc.getProperties().getProperty("mushroom.druid.initialSize")));
+                DataSourceProxy proxy = SpringContextHolder.getBean(DATASOURCE_PROXY_BEAN_NAME);
                 proxy.setDataSource(dataSource);
 
                 // 6 load 数据库配置
@@ -282,23 +266,36 @@ public class InstallController extends SupportController {
 
                 // 设置安装状态文件(降级判断会通过文件判断)
                 application.setAttribute(AppStatic.WEB_APP_INSTALL, true);
-                String BasePath = application.getRealPath("/data/");
-                OutputStream os = new FileOutputStream(new File(BasePath + "/install.lock"));
-                os.write(0);
-                os.flush();
-                os.close();
+//                String BasePath = application.getRealPath("/data/");
+//                OutputStream os = new FileOutputStream(new File(BasePath + "/install.lock"));
+//                os.write(0);
+//                os.flush();
+//                os.close();
 
-                // 设置安装状态(必须)
-                dbc.set("mrcms.install", "true");
+                /* ==============================================
+                 *       数据库设置持久化
+                 * ==============================================
+                 */
+                SystemBaseConfig dbc = SystemBaseConfig.getInstance();
+                dbc.set("mushroom.db.host", host);
+                dbc.set("mushroom.db.port", port);
+                dbc.set("mushroom.db.demo", name);
+                dbc.set("mushroom.db.user", user);
+                dbc.set("mushroom.db.pass", pass);
+                dbc.set("mushroom.db.prefix", prefix);
+                dbc.set("mrcms.install", "true");  // 设置安装状态(必须)
                 dbc.store();//保存
             } catch (Exception e) {
+                view.addObject("install", false);
                 exceptionStr = e.getMessage();
+                view.addObject("exceptionStr", exceptionStr);
+                view.addObject("WebRootPath", WebRootPath);
                 log.error("mrcms install exception", e);
+                return view;
             }
         }
 
         view.addObject("install", true);
-        view.addObject("exceptionStr", exceptionStr);
         view.addObject("WebRootPath", WebRootPath);
 
         return view;

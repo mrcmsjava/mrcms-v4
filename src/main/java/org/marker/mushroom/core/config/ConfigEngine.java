@@ -52,8 +52,7 @@ public abstract class ConfigEngine implements IConfig {
 	 * @param cfgFilePath
 	 */
 	public ConfigEngine(String cfgFilePath) {
-		String filepath = WebRealPathHolder.REAL_PATH + cfgFilePath;
-		this.read(new File(filepath));
+		this.read(new File(cfgFilePath));
 	}
 
 	public ConfigEngine() {}
@@ -98,6 +97,7 @@ public abstract class ConfigEngine implements IConfig {
 	 * @param _cfgFile 配置文件File对象
 	 */
 	public void read(File _cfgFile){
+		logger.debug("load config: {}", _cfgFile.getAbsolutePath());
 		this.cfgFile = _cfgFile;
 		FileInputStream in = null;
 		InputStreamReader isr = null;
@@ -106,12 +106,12 @@ public abstract class ConfigEngine implements IConfig {
 			isr = new InputStreamReader(in, FILE_ENCODEING);
 			this.properties.load(isr);//读取配置文件 
 		}catch (FileNotFoundException e) {
-			logger.error("config file not found " + cfgFile.getAbsolutePath(), e);
+			logger.error("config file not found " + cfgFile.getAbsolutePath());
 		} catch (UnsupportedEncodingException e) {
-			logger.error(cfgFile.getAbsolutePath()+" not supported encoding " + FILE_ENCODEING,e);
+			logger.error(cfgFile.getAbsolutePath()+" not supported encoding " + FILE_ENCODEING, e);
 		} catch (IOException e) {
 			logger.error("IOException " + cfgFile.getAbsolutePath(), e);
-		}finally{
+		} finally {
 			try {
 				if (isr != null) {
 					isr.close();

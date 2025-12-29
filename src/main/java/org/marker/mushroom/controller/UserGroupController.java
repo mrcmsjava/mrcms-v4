@@ -6,8 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.beans.*;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
-import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.dao.*;
 import org.marker.mushroom.support.SupportController;
 import org.springframework.beans.factory.annotation.Autowired;

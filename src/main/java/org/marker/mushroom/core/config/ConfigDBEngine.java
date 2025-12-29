@@ -1,18 +1,23 @@
 package org.marker.mushroom.core.config;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.marker.mushroom.core.DataSourceProxy;
 import org.marker.mushroom.core.config.annotation.IgnoreCopyProperties;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.utils.ArrayUtils;
+import org.marker.mushroom.utils.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
+import static org.marker.mushroom.core.DataSourceProxy.DATASOURCE_PROXY_BEAN_NAME;
 
 
 /**
@@ -54,7 +59,16 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 	@Override
 	public void afterPropertiesSet() {
 		logger.debug("[{}] load db config", this.getClass().getSimpleName());
-		this.read();
+		DataSourceProxy dataSourceProxy = null;
+		try{
+			  dataSourceProxy = SpringUtils.getBean(DATASOURCE_PROXY_BEAN_NAME);
+		}catch (Exception e){}
+		if (dataSourceProxy == null) {
+			this.read();
+		}
+		if (dataSourceProxy != null && dataSourceProxy.isOK()) {
+			this.read();
+		}
 	}
 
 
@@ -99,7 +113,7 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 	public synchronized void read(){
 		String name = this.getClass().getSimpleName();
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
         String prefix = dbcfg.getPrefix();
 
 		String sql = "select * from "+prefix+"sys_config where config=?";
@@ -151,7 +165,7 @@ public abstract class ConfigDBEngine<S extends ConfigDBEngine> implements Initia
 	public void store(){
 		String name = this.getClass().getSimpleName();
 
-        DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+        SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
         String prefix = dbcfg.getPrefix();
 
 		// 先查询现有的当前类配置

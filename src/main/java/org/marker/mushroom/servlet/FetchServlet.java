@@ -5,7 +5,7 @@
 package org.marker.mushroom.servlet;
 
 import org.marker.mushroom.alias.DAO;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.dao.ISupportDao;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.utils.HttpUtils;
@@ -75,7 +75,7 @@ public class FetchServlet  extends HttpServlet {
 			data.append(isFlash).append(",");
 
 
-			  DataBaseConfig dbconfig = DataBaseConfig.getInstance();
+			  SystemBaseConfig dbconfig = SystemBaseConfig.getInstance();
 			
 			String prefix = dbconfig.getPrefix(); 
 			ISupportDao dao = SpringContextHolder.getBean(DAO.COMMON);

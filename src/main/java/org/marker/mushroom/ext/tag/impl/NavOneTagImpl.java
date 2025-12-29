@@ -18,7 +18,7 @@ package org.marker.mushroom.ext.tag.impl;
 import org.marker.mushroom.alias.Core;
 import org.marker.mushroom.context.ActionContext;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.exception.SystemException;
 import org.marker.mushroom.ext.tag.MatchRule;
 import org.marker.mushroom.ext.tag.Taglib;
@@ -26,12 +26,6 @@ import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.template.MyCMSTemplate;
 import org.marker.mushroom.template.tags.res.SQLDataSourceImpl;
 import org.marker.mushroom.utils.HttpUtils;
-import org.marker.mushroom.utils.WebUtils;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.RequestContext;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -97,7 +91,7 @@ public class NavOneTagImpl extends Taglib {
             WebParam param = WebParam.get();
 			String pageName = param.pageName;
 			int cid = param.channel.getId();
-            DataBaseConfig config = DataBaseConfig.getInstance();
+            SystemBaseConfig config = SystemBaseConfig.getInstance();
 
 //			long pid = param.channel.getPid();
 

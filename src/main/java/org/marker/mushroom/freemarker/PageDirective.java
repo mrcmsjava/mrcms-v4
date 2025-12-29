@@ -3,12 +3,9 @@ package org.marker.mushroom.freemarker;
 import java.io.IOException;
 import java.util.Map;
 
-import org.marker.mushroom.alias.DAO;
 import org.marker.mushroom.alias.Services;
 import org.marker.mushroom.beans.Page;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
-import org.marker.mushroom.dao.ICommonDao;
 import org.marker.mushroom.ext.model.ContentModel;
 import org.marker.mushroom.ext.model.ContentModelContext;
 import org.marker.mushroom.holder.SpringContextHolder;

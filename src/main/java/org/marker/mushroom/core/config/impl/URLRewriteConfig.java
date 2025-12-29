@@ -48,12 +48,10 @@ public class URLRewriteConfig extends ConfigDBEngine  implements InitializingBea
 		return SpringContextHolder.getApplicationContext().getBean(URLRewriteConfig.class);
     }
 
-
-    /**
-	 * 初始化
-	 */
-	public void afterPropertiesSet(){
+	@Override
+	public synchronized void read() {
 		super.read();
+
 		String suffix = this.properties.getProperty(PAGE_SUFFIX, DEFAULT_PAGE_SUFFIX);// 页面后缀
 		// 加载到URL重写引擎中
 		for(Object key : this.properties.keySet()){
@@ -65,6 +63,7 @@ public class URLRewriteConfig extends ConfigDBEngine  implements InitializingBea
 			}
 		}
 	}
+
 	
 	
  

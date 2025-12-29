@@ -28,9 +28,8 @@ RequestParamsInterceptor implements HandlerInterceptor {
     @Override
 	public boolean preHandle(HttpServletRequest request,
 							 HttpServletResponse response, Object handler) throws Exception {
-		String METHOD = request.getMethod();
-		String uri = request.getRequestURI();
-		logger.info("{} {} {}",METHOD, uri,  JSON.toJSON(request.getParameterMap()));
+		request.setAttribute("requestTime", System.currentTimeMillis());
+
 		return true;
 	}
 
@@ -51,6 +50,11 @@ RequestParamsInterceptor implements HandlerInterceptor {
 	public void afterCompletion(HttpServletRequest request,
                                 HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
+		long startTime = (long)request.getAttribute("requestTime");
+		String METHOD = request.getMethod();
+		String uri = request.getRequestURI();
+		long time = System.currentTimeMillis()- startTime;
+		logger.debug("{}\t{}\t{}\t{}", time,METHOD, uri,  JSON.toJSON(request.getParameterMap()));
 	}
 
 }

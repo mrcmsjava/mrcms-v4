@@ -5,7 +5,6 @@ import org.marker.mushroom.beans.Channel;
 import org.marker.mushroom.beans.Page;
 import org.marker.mushroom.context.ActionContext;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
 import org.marker.mushroom.ext.model.ContentModel;
 import org.marker.mushroom.template.tags.res.WebDataSource;
 

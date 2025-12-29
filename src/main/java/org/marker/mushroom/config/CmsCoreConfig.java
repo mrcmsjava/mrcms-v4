@@ -1,20 +1,20 @@
 package org.marker.mushroom.config;
 
+import org.marker.mushroom.core.DataSourceProxy;
 import org.marker.mushroom.core.config.impl.*;
 import org.marker.mushroom.holder.InitBuilderHolder;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.holder.WebRealPathHolder;
 import org.marker.mushroom.utils.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
+
+import static org.marker.mushroom.core.DataSourceProxy.DATASOURCE_PROXY_BEAN_NAME;
 
 @Configuration
-@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@Order(Ordered.LOWEST_PRECEDENCE - 10)
 public class CmsCoreConfig {
 
 
@@ -51,6 +51,14 @@ public class CmsCoreConfig {
     }
 
 
+    @Bean(name = DATASOURCE_PROXY_BEAN_NAME)
+    @Conditional(value = { DataSourceProxy.DataSourceProxyCondition.class})
+//    @ConditionalOnProperty(value =   "mrcms.install", matchIfMissing = true )
+    public DataSourceProxy dataSourceProxy() {
+        return new DataSourceProxy(null);
+    }
+
+
 
 
     /**
@@ -61,6 +69,15 @@ public class CmsCoreConfig {
     @Bean
     public URLRewriteConfig urlRewriteConfig() {
         return new URLRewriteConfig();
+    }
+
+    /**
+     * 系统基础配置
+     * @return
+     */
+    @Bean
+    public SystemBaseConfig systemBaseConfig() {
+        return new SystemBaseConfig();
     }
 
     /**
@@ -89,8 +106,5 @@ public class CmsCoreConfig {
     public OpenAIConfig openAiConfig() {
         return new OpenAIConfig();
     }
-    @Bean
-    public DataBaseConfig dataBaseConfig() {
-        return new DataBaseConfig();
-    }
+
 }

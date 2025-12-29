@@ -12,7 +12,7 @@ import org.marker.mushroom.context.ActionContext;
 import org.marker.mushroom.core.AppStatic;
 import org.marker.mushroom.core.SystemStatic;
 import org.marker.mushroom.core.component.SiteContext;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.core.config.impl.URLRewriteConfig;
 import org.marker.mushroom.core.proxy.SingletonProxyKeyWordComputer;
@@ -67,13 +67,13 @@ public class InitBuilderHolder implements ServletContextAware{
 		 *          Database config bind
 		 * ============================================================
 		 */
-		DataBaseConfig dataBaseConfig = DataBaseConfig.getInstance();
+		SystemBaseConfig systemBaseConfig = SystemBaseConfig.getInstance();
 		logger.info("application DataBaseConfig init");
-		dataBaseConfig.init();
+
 
 		logger.info("check mrcms install?");
-		application.setAttribute(AppStatic.WEB_APP_INSTALL, dataBaseConfig.isInstall());
-		logger.info("check success. install = {}", dataBaseConfig.isInstall());//  系统是否被安装
+		application.setAttribute(AppStatic.WEB_APP_INSTALL, systemBaseConfig.isInstall());
+		logger.info("check success. install = {}", systemBaseConfig.isInstall());//  系统是否被安装
 
 		/*
 		 * ============================================================
@@ -172,7 +172,7 @@ public class InitBuilderHolder implements ServletContextAware{
 		 * ============================================================
 		 */
 		logger.info("mrcms MessageContext init ...");
-		if(dataBaseConfig.isInstall()){
+		if(systemBaseConfig.isInstall()){
 			MessageDBContext messageDBContext = MessageDBContext.getInstance();
 			if(!messageDBContext.isInit()){
 				try {
@@ -192,18 +192,23 @@ public class InitBuilderHolder implements ServletContextAware{
 		 */
 		logger.info("mrcms Cache init ...");
 		SiteContext siteContext = SpringContextHolder.getBean(SystemStatic.SYSTEM_CMS_SITE);
-		siteContext.refreshCache();
-
+		if (systemBaseConfig.isInstall()) {
+			siteContext.refreshCache();
+		}
 		String pluginsPath = SystemConfig.getInstance().getPluginsPath();
+		String themesPath  = webRootPath+"themes";
 		try {
 
 			// 复制 static 目录下所有 .txt 文件（包括子目录）
 			ClassPathUtils.copyFilesFromClasspath("src/main/modules/", pluginsPath);
+
+//			logger.info("mrcms thems init ...");
+//			ClassPathUtils.copyFilesFromClasspath("themes", themesPath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		if (dataBaseConfig.isInstall()) {
+		if (systemBaseConfig.isInstall()) {
 			String moduleDir =  pluginsPath  ;// 模块目录
 
 			// 缓存目录

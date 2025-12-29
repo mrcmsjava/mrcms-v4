@@ -1,5 +1,6 @@
 package org.marker.mushroom.config;
 
+import freemarker.cache.SoftCacheStorage;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -49,9 +50,10 @@ public class CmsFreemarkerConfig {
             adminTemplatePath = new File("").getAbsolutePath() + File.separator + "src/main/resources/templates/content/";
             log.debug("adminTemplatePath: {}", adminTemplatePath);
         }
+        String themesPath = "classpath:/themes";
 
         // 设置模板加载路径
-        configurer.setTemplateLoaderPaths(adminTemplatePath, "classpath:/modules/", pluginsPath);
+        configurer.setTemplateLoaderPaths(themesPath, adminTemplatePath, "classpath:/modules/", pluginsPath);
 
         // 设置预加载器
         configurer.setPreTemplateLoaders(stringTemplateLoader());
@@ -70,7 +72,8 @@ public class CmsFreemarkerConfig {
         // 设置 FreeMarker 变量
         Map<String, Object> variables = new HashMap<>();
         variables.put("load", new LoadDirective());
-        variables.put("Boostrap3Nav", new BootStrap3NavDirective());
+        variables.put("Bootstrap3Nav", new BootStrap3NavDirective());
+        variables.put("Bootstrap3NavHome", new Bootstrap3NavHomeDirective());
         variables.put("HuaXiSiYuanNav", new HuaxiSiYuanNavDirective());
         variables.put("HuaXiSiYuanPCNav", new HuaxiSiYuanPCNavDirective());
         variables.put("Nav", new NavDirective());
@@ -115,7 +118,11 @@ public class CmsFreemarkerConfig {
         // freemarker变量注入
         configurer.setFreemarkerVariables(java.util.Collections.singletonMap("encoder", new FrontURLRewriteMethodModel()));
         configurer.afterPropertiesSet();
-        configurer.getConfiguration().setObjectWrapper(new CustomObjectWrapper());
+        freemarker.template.Configuration configuration = configurer.getConfiguration();
+
+        configuration.setObjectWrapper(new CustomObjectWrapper());
+        configuration.setTemplateUpdateDelayMilliseconds(1000L);// 1秒检查一次更新
+        configuration.setCacheStorage(new SoftCacheStorage()); // 使用软引用缓存
         return configurer;
     }
 }

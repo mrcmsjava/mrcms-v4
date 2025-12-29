@@ -1,7 +1,7 @@
 package org.marker.mushroom.ext.message;
 
 import org.apache.commons.lang.StringUtils;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.holder.WebRealPathHolder;
@@ -95,7 +95,7 @@ public class MessageDBContext {
 	 * @throws URISyntaxException 
 	 */
 	public void init() throws Exception {
-		DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+		SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
 		String prefix = dbcfg.getPrefix();
 
 		String sql = "select * from "+prefix+"sys_language";
@@ -214,7 +214,7 @@ public class MessageDBContext {
 	public void storeProperty() throws IOException{
 
 
-		DataBaseConfig dbcfg = DataBaseConfig.getInstance();
+		SystemBaseConfig dbcfg = SystemBaseConfig.getInstance();
 		String prefix = dbcfg.getPrefix();
 
 

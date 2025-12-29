@@ -8,7 +8,7 @@ import org.marker.mushroom.beans.Channel;
 import org.marker.mushroom.beans.Page;
 import org.marker.mushroom.context.ActionContext;
 import org.marker.mushroom.core.WebParam;
-import org.marker.mushroom.core.config.impl.DataBaseConfig;
+import org.marker.mushroom.core.config.impl.SystemBaseConfig;
 import org.marker.mushroom.dao.ICategoryDao;
 import org.marker.mushroom.dao.IChannelDao;
 import org.marker.mushroom.dao.ISupportDao;
@@ -130,7 +130,7 @@ public class ThematicService extends BaseService{
         int pageSize = 15;
         String keywords = param.keywords;
 
-        DataBaseConfig config = DataBaseConfig.getInstance();
+        SystemBaseConfig config = SystemBaseConfig.getInstance();
         String prefix = config.getPrefix();
 
         String sql = "select  M.*,C.name cname, concat('/cms?','type=article','&id=',CAST(M.id as char),'&time=',DATE_FORMAT(M.time,'%Y%m%d')) url from "+prefix+"channel C "
