@@ -1,7 +1,14 @@
 package com.baidu.ueditor.upload;
 
+import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.common.auth.DefaultCredentialProvider;
+import com.aliyun.oss.common.auth.DefaultCredentials;
+import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
+import com.aliyun.oss.common.comm.SignVersion;
+import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.baidu.ueditor.PathFormat;
 import com.baidu.ueditor.define.AppInfo;
@@ -19,9 +26,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.marker.mushroom.utils.HttpUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.security.cert.Certificate;
 import java.util.*;
 
 @Slf4j
@@ -184,17 +193,31 @@ public class BinaryUploader {
 
 				String domain = storageConfig.getProperty("aliyunOss.domain");
 				String endpoint = storageConfig.getProperty("aliyunOss.endpoint");
+				String region = storageConfig.getProperty("aliyunOss.region");
 				String bucket = storageConfig.getProperty("aliyunOss.bucket");
 				String accessKeyId = storageConfig.getProperty("aliyunOss.accessKeyId");
 				String accessKeySecret = storageConfig.getProperty("aliyunOss.accessKeySecret");
 
-				OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+				// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+				DefaultCredentialProvider credentialsProvider = CredentialsProviderFactory.newDefaultCredentialProvider(accessKeyId, accessKeySecret);
+				ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+				clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+				OSS ossClient =OSSClientBuilder.create()
+					    .endpoint(endpoint)
+						.credentialsProvider(credentialsProvider)
+						.clientConfiguration(clientBuilderConfiguration)
+						.region(region)
+						.build();
 
+				// 创建PutObjectRequest对象。
+				PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, savePath, is);
+
+				PutObjectResult result = ossClient.putObject(putObjectRequest);
 				//此处"xxxx/yyyy/"+fileName,表示上传至阿里云中xxxx文件夹下的yyyy文件夹中，请修改为自己的路径即可
-				PutObjectResult result = ossClient.putObject(bucket, savePath, is);
+
 				ossClient.shutdown();
 				storageState = new BaseState(true);
-				storageState.putInfo( "size", result.getResponse().getContentLength() );
+				storageState.putInfo( "size", 0);
 				storageState.putInfo( "title", fileName);
 //				storageState = StorageManager.saveFileByInputStream(is, physicalPath, maxSize);
 				storageState.putInfo("state", "SUCCESS");// UEDITOR的规则:不为SUCCESS则显示state的内容
@@ -204,8 +227,7 @@ public class BinaryUploader {
 				storageState.putInfo("title", fileName);
 				storageState.putInfo("original", fileName);
 			} catch (Exception e) {
-				// TODO: handle exception
-				System.out.println(e.getMessage());
+				log.error("", e);
 				storageState.putInfo("state", "文件上传失败!");
 				storageState.putInfo("url","");
 				storageState.putInfo("title", "");

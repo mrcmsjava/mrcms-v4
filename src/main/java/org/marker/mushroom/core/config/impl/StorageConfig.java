@@ -55,6 +55,7 @@ public final class StorageConfig extends ConfigDBEngine<StorageConfig> {
         if (this.aliyunOss == null) {
             AliyunOssProperties propertiesTmp = new AliyunOssProperties();
             propertiesTmp.setEndpoint(this.properties.getProperty("aliyunOss.endpoint"));
+            propertiesTmp.setRegion(this.properties.getProperty("aliyunOss.region"));
             propertiesTmp.setBucket(this.properties.getProperty("aliyunOss.bucket"));
             propertiesTmp.setAccessKeyId(this.properties.getProperty("aliyunOss.accessKeyId"));
             propertiesTmp.setAccessKeySecret(this.properties.getProperty("aliyunOss.accessKeySecret"));
@@ -95,6 +96,10 @@ public final class StorageConfig extends ConfigDBEngine<StorageConfig> {
          * endpoint
          */
         private String endpoint;
+        /**
+         * region
+         */
+        private String region;
         /**
          * 自定义域名，优先级更高，默认https://bucket+endpoint拼接
          */
