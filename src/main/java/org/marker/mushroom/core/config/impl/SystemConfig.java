@@ -173,7 +173,7 @@ public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
         if(StringUtils.isEmpty(themesPath)){
             return "classpath:/templates/themes";
         }
-    	return themesPath;
+    	return "file:/" + themesPath;
 	}
 
 	public Resource getThemesPathResource(){

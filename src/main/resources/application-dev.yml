@@ -9,3 +9,6 @@ spring:
       enabled: true
       port: 35729
 
+logging:
+  level:
+    root: info

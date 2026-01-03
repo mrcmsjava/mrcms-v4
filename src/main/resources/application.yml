@@ -54,7 +54,7 @@ spring:
       pool-name: MrcmsPool
 logging:
   level:
-    root: debug
+    root: info
 
 # 验证码
 kaptcha:

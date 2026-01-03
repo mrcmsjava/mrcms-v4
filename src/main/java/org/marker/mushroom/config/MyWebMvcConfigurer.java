@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.interceptor.RequestParamsInterceptor;
 import org.marker.mushroom.interceptor.SignInterceptor;
+import org.marker.mushroom.utils.PathUtils;
 import org.marker.mushroom.utils.SpringUtils;
 import org.marker.urlrewrite.freemarker.FrontURLRewriteMethodModel;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -92,18 +93,18 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-        SystemConfig syscfg = SystemConfig.getInstance();
-        String themesPath = String.format("file:/%s",syscfg.getThemesPath());
-
         List<ResourceHandlerRegistration> resourceHandlerRegistrationList = new ArrayList<>();
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/upload/**").addResourceLocations("/upload/"));
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/public/**").addResourceLocations("classpath:/static/"));
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/"));
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/robots.txt").addResourceLocations("classpath:/static/robots.txt"));
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/install/**").addResourceLocations("classpath:/templates/content/"));
+
+        // 处理多重主题目录静态资源
+        SystemConfig syscfg = SystemConfig.getInstance();
+        String themesPath = syscfg.getThemesPath();
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/themes/**")
-                .addResourceLocations("classpath:/templates/", themesPath)
+            .addResourceLocations("classpath:/templates/", PathUtils.goBackOneDirectory(themesPath))
         );
 
         if (SpringUtils.isDev()) {

@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -345,6 +346,8 @@ public class SystemController extends SupportController {
 			}
 			return list;
 		}else{
+			themesPath = themesPath.replace("file:/",""); // fix
+
 			File file = new File(themesPath);
 			String[] filelist = file.list();
 			for(String themeName : filelist ){

@@ -77,4 +77,27 @@ public class PathUtils {
             return false;
         }
     }
+
+
+
+    /**
+     * 将路径退一个目录
+     */
+    public static String goBackOneDirectory(String filePath) {
+        // 移除file:前缀
+        String pathWithoutPrefix = filePath.replaceFirst("^file:/", "");
+
+        // 使用Path API处理
+        Path path = Paths.get(pathWithoutPrefix);
+
+        // 获取父目录
+        Path parentPath = path.getParent();
+
+        if (parentPath != null) {
+            // 重新添加file:前缀
+            return "file:/" + parentPath.toString();
+        } else {
+            throw new IllegalArgumentException("无法获取父目录: " + filePath);
+        }
+    }
 }

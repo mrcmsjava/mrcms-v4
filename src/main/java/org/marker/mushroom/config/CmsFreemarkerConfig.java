@@ -73,6 +73,7 @@ public class CmsFreemarkerConfig {
         Map<String, Object> variables = new HashMap<>();
         variables.put("load", new LoadDirective());
         variables.put("Bootstrap3Nav", new BootStrap3NavDirective());
+        variables.put("Boostrap3Nav", new BootStrap3NavDirective());
         variables.put("Bootstrap3NavHome", new Bootstrap3NavHomeDirective());
         variables.put("HuaXiSiYuanNav", new HuaxiSiYuanNavDirective());
         variables.put("HuaXiSiYuanPCNav", new HuaxiSiYuanPCNavDirective());
