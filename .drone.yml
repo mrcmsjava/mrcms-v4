@@ -11,9 +11,7 @@ steps:
         path: /root/.ssh
     commands:
       - chmod 600 /root/.ssh/id_rsa
-    when:
-      branch:
-        - release
+
 
   - name: build-jar
     #image: nas.mrcms.cn:8082/maven:3.8.6-jdk-8-slim
@@ -31,9 +29,9 @@ steps:
       - ls /drone/maven
       - chmod +x /drone/maven/bin/mvn
       - /drone/maven/bin/mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pdev
-    when:
-      branch:
-        - dev
+#    when:
+#      branch:
+#        - dev
 
 
   - name: scp jar to ${DRONE_BRANCH}
@@ -53,9 +51,7 @@ steps:
       strip_components: 2
       target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
       source: ./target/dist
-    when:
-      branch:
-        - dev
+
 
 
 
@@ -171,3 +167,5 @@ trigger:
       - custom
   branch:
     - dev
+    - native-release
+    - release
