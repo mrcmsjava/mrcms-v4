@@ -14,7 +14,7 @@
         <!-- 包含项目根目录下的 config 目录 -->
         <fileSet>
             <directory>${project.basedir}/build</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/app</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
@@ -23,7 +23,7 @@
         <!-- 包含 target 目录下的 jar 文件 -->
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <outputDirectory>/libs</outputDirectory>
+            <outputDirectory>/app/libs</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
@@ -32,7 +32,7 @@
         <!-- 包含特定文件 -->
         <fileSet>
             <directory>${project.basedir}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/app</outputDirectory>
             <includes>
                 <include>README.md</include>
                 <include>LICENSE</include>

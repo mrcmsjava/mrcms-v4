@@ -118,12 +118,35 @@ steps:
         from_secret: registry_nexus_username
       password:
         from_secret: registry_nexus_password
-      repo: nas.mrcms.cn:8083/wuweiit/mrcms
+      repo: nas.mrcms.cn:8083/wuweiit/mrcms-native
       tags:
         - ${DRONE_BUILD_NUMBER}
     when:
       branch:
         - native-release
+  - name: image
+    image: plugins/docker
+    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+    volumes:
+      - name: dockerSock
+        path: /var/run/docker.sock
+    settings:
+      insecure: false
+      registry: nas.mrcms.cn:8083
+      mirror: https://dkwe3jow.mirror.aliyuncs.com
+      storage_path: /docker
+      dockerfile: Dockerfile
+      build_args: JAR_FILE=./target/mrcms.jar
+      username:
+        from_secret: registry_nexus_username
+      password:
+        from_secret: registry_nexus_password
+      repo: nas.mrcms.cn:8083/wuweiit/mrcms
+      tags:
+        - ${DRONE_BUILD_NUMBER}
+    when:
+      branch:
+        - release
 
 volumes:
   - name: ssh
