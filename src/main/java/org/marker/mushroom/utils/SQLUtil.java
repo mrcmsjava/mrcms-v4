@@ -213,7 +213,7 @@ public class SQLUtil {
 			out();
 			this.indent += 1;
 			newline();
-			this.parenCounts.addLast(new Integer(this.parensSinceSelect));
+			this.parenCounts.addLast(Integer.valueOf(this.parensSinceSelect));
 			this.afterByOrFromOrSelects.addLast(Boolean
 					.valueOf(this.afterByOrSetOrFromOrSelect));
 			this.parensSinceSelect = 0;
