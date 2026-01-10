@@ -2,6 +2,7 @@ package org.marker.mushroom.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.core.config.impl.SystemBaseConfig;
+import org.marker.mushroom.utils.PathUtils;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,11 +69,10 @@ public class CmsProfileConfig {
 
         List<Resource> resources = new ArrayList();
         resources.add(0, new ClassPathResource("/config.properties"));
-        resources.add(1, new FileSystemResource("/etc/mrcms/config.properties"));
         // 此处加载与Config引擎加载有所区别，基于spring PropertiesFactoryBean加载的
         String customConfigFile = SystemBaseConfig.getCustomConfigFile();
         if (StringUtils.isNotBlank(customConfigFile)) {
-            resources.add(2, new FileSystemResource(customConfigFile)); // 优先级最高
+            resources.add(1, new FileSystemResource(customConfigFile)); // 优先级最高
         }
         factoryBean.setLocations(resources.toArray(new Resource[0]));
         // 调用 getObject 方法获取 Properties 对象

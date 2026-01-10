@@ -52,7 +52,6 @@ public class InitBuilderHolder implements ServletContextAware{
 	@Override
 	public void setServletContext(ServletContext application) {
 		String webRootPath = WebRealPathHolder.REAL_PATH;//网站根目录路径
-		String s = PathUtils.getJarDirectory();
 
 		logger.info("mrcms runtime on path = {}", webRootPath);
 

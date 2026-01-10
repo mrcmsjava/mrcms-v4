@@ -5,6 +5,7 @@ import org.springframework.boot.system.ApplicationHome;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
@@ -91,7 +92,7 @@ public class PathUtils {
      */
     public static String goBackOneDirectory(String filePath) {
         // 移除file:前缀
-        String pathWithoutPrefix = filePath.replaceFirst("^file:/", "");
+        String pathWithoutPrefix = filePath.replaceFirst("^file://", "");
 
         // 使用Path API处理
         Path path = Paths.get(pathWithoutPrefix);
@@ -101,7 +102,7 @@ public class PathUtils {
 
         if (parentPath != null) {
             // 重新添加file:前缀
-            return "file:/" + parentPath.toString();
+            return "file://" + parentPath.toString();
         } else {
             throw new IllegalArgumentException("无法获取父目录: " + filePath);
         }
@@ -112,13 +113,25 @@ public class PathUtils {
      * 获取mrcms运行的根路径
      */
     public static String getHomePath() {
-        String runningfilePath = getJarDirectory();
+        String runningfilePath =getApplicationDir() ;
         if (isRunningInJar()) { // jar包运行
             return runningfilePath.replace("\\libs","");
         } else {// 源码运行 target目录
-            return runningfilePath.replace("\\target","\\build");
+            return runningfilePath.replace("\\target\\classes","\\build");
         }
     }
+    /**
+     * 获取 Spring Boot 应用运行目录
+     * 适用于 JAR 包和 IDE 运行
+     */
+    public static String getApplicationDir() {
+        // ApplicationHome 会自动判断运行环境
+        ApplicationHome home = new ApplicationHome(MrcmsApplication.class);
+        File dir = home.getDir();  // 获取目录
+        return dir.getAbsolutePath();
+    }
+
+
 
     /**
      * 获取当前运行的JAR文件路径

@@ -2,8 +2,10 @@ package org.marker.mushroom.core.config.impl;
 
 import org.marker.mushroom.core.config.ConfigEngine;
 import org.marker.mushroom.holder.SpringContextHolder;
+import org.marker.mushroom.utils.PathUtils;
 import org.marker.mushroom.utils.StringUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -48,7 +50,7 @@ public class SystemBaseConfig extends ConfigEngine {
 	 */
 	public static String getCustomConfigFile(){
 		String baseConfigFile =  System.getProperty("mrcms.config");
-		return StringUtil.isBlank(baseConfigFile)? DEFAULT_CUSTOM_CONFIG_FILE: baseConfigFile;
+		return StringUtil.isBlank(baseConfigFile)? PathUtils.getHomePath() + File.separator+ "conf"+ File.separator+"config.properties": baseConfigFile;
 	}
 	
 	/**

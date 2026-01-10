@@ -11,9 +11,7 @@ steps:
         path: /root/.ssh
     commands:
       - chmod 600 /root/.ssh/id_rsa
-    when:
-      branch:
-        - release
+
 
   - name: build-jar
     #image: nas.mrcms.cn:8082/maven:3.8.6-jdk-8-slim
@@ -31,9 +29,9 @@ steps:
       - ls /drone/maven
       - chmod +x /drone/maven/bin/mvn
       - /drone/maven/bin/mvn package -DskipTests=true -Dmaven.javadoc.skip=true -U -Pdev
-    when:
-      branch:
-        - dev
+#    when:
+#      branch:
+#        - dev
 
 
   - name: scp jar to ${DRONE_BRANCH}
@@ -53,9 +51,7 @@ steps:
       strip_components: 2
       target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
       source: ./target/dist
-    when:
-      branch:
-        - dev
+
 
 
 
@@ -101,7 +97,7 @@ steps:
         - native
 
 
-  - name: image
+  - name: 构建native镜像
     image: plugins/docker
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     volumes:
@@ -118,12 +114,36 @@ steps:
         from_secret: registry_nexus_username
       password:
         from_secret: registry_nexus_password
-      repo: nas.mrcms.cn:8083/wuweiit/mrcms
+      repo: nas.mrcms.cn:8083/wuweiit/mrcms-native
       tags:
         - ${DRONE_BUILD_NUMBER}
     when:
       branch:
         - native-release
+
+  - name: 构建java镜像
+    image: plugins/docker
+    pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
+    volumes:
+      - name: dockerSock
+        path: /var/run/docker.sock
+    settings:
+      insecure: false
+      registry: nas.mrcms.cn:8083
+      mirror: https://dkwe3jow.mirror.aliyuncs.com
+      storage_path: /docker
+      dockerfile: Dockerfile
+      build_args: JAR_FILE=./target/app.jar
+      username:
+        from_secret: registry_nexus_username
+      password:
+        from_secret: registry_nexus_password
+      repo: nas.mrcms.cn:8083/wuweiit/mrcms
+      tags:
+        - ${DRONE_BUILD_NUMBER}
+    when:
+      branch:
+        - release
 
 volumes:
   - name: ssh
@@ -148,3 +168,5 @@ trigger:
       - custom
   branch:
     - dev
+    - native-release
+    - release
