@@ -20,7 +20,6 @@
             </includes>
         </fileSet>
 
-
         <!-- 包含 target 目录下的 jar 文件 -->
         <fileSet>
             <directory>${project.build.directory}</directory>

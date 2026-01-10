@@ -52,7 +52,7 @@ steps:
       port: 22
       strip_components: 2
       target: /opt/baota/www/wwwroot/open.joggle.cn/mrcmsv4/
-      source: ./target/mrcms.jar;./target/*.zip;
+      source: ./target/dist
     when:
       branch:
         - dev
