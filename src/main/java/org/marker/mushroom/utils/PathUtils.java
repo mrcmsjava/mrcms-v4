@@ -1,8 +1,14 @@
 package org.marker.mushroom.utils;
 
+import org.marker.mushroom.MrcmsApplication;
+import org.springframework.boot.system.ApplicationHome;
+
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,4 +106,66 @@ public class PathUtils {
             throw new IllegalArgumentException("无法获取父目录: " + filePath);
         }
     }
+
+
+    /**
+     * 获取mrcms运行的根路径
+     */
+    public static String getHomePath() {
+        String runningfilePath = getJarDirectory();
+        if (isRunningInJar()) { // jar包运行
+            return runningfilePath.replace("\\libs","");
+        } else {// 源码运行 target目录
+            return runningfilePath.replace("\\target","\\build");
+        }
+    }
+
+    /**
+     * 获取当前运行的JAR文件路径
+     */
+    public static String getJarFilePath() {
+        // 获取主类的位置
+        ProtectionDomain protectionDomain = PathUtils.class.getProtectionDomain();
+        CodeSource codeSource = protectionDomain.getCodeSource();
+
+        if (codeSource != null && codeSource.getLocation() != null) {
+            try {
+                File jarFile = new File(codeSource.getLocation().toURI());
+                return jarFile.getAbsolutePath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取JAR包所在目录
+     */
+    public static String getJarDirectory() {
+        String jarPath = getJarFilePath();
+        if (jarPath != null) {
+            File jarFile = new File(jarPath);
+            return jarFile.getParent();
+        }
+        return null;
+    }
+
+
+    /**
+     * Spring Boot官方推荐的方法
+     */
+    public static boolean isRunningInJar() {
+        try {
+            ApplicationHome home = new ApplicationHome(MrcmsApplication.class);
+            File source = home.getSource();
+            if (source == null) {
+                return false;
+            }
+            return source.getName().toLowerCase().endsWith(".jar");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
