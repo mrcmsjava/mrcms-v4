@@ -313,18 +313,15 @@ public class SystemController extends SupportController {
 	public @ResponseBody Object themes(HttpServletRequest request) throws IOException {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		String themesPath = config.getThemesPath();
-
-		if (themesPath.startsWith("classpath:")) {
-			// 获取 ResourcePatternResolver
-			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-			org.springframework.core.io.Resource[] siblingResources =  resolver.getResources(themesPath+File.separator+"*");
-
-			for(org.springframework.core.io.Resource themePath : siblingResources ){
-				String themeName = themePath.getFilename();
-				org.springframework.core.io.Resource con = themePath.createRelative(themeName+File.separator+"config.groovy");
-
-				try {
-					String groovyScript = con.getContentAsString(StandardCharsets.UTF_8);
+		themesPath = themesPath.replace("file:/",""); // fix
+		File file = new File(themesPath);
+		String[] filelist = file.list();
+		for(String themeName : filelist ){
+			String config = themesPath + File.separator +themeName+File.separator  + "config.groovy";
+			try {
+				File f = new File(config);
+				if(f.exists()){// 如果配置文件存在
+					String groovyScript = FileTools.getFileContet(f, FileTools.FILE_CHARACTER_UTF8);
 					Binding bind = new Binding();
 					GroovyShell gs = new GroovyShell(bind);
 					gs.evaluate(groovyScript);
@@ -336,45 +333,12 @@ public class SystemController extends SupportController {
 					themecfg.put("icon", iconpath);
 					themecfg.put("path", themeName);
 					list.add(themecfg);
-
-
-
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-
+			} catch (Exception e) {
+				log.error("", e);
 			}
-			return list;
-		}else{
-			themesPath = themesPath.replace("file:/",""); // fix
-
-			File file = new File(themesPath);
-			String[] filelist = file.list();
-			for(String themeName : filelist ){
-				String config = themesPath + File.separator +themeName+File.separator  + "config.groovy";
-				try {
-					File f = new File(config);
-					if(f.exists()){// 如果配置文件存在
-						String groovyScript = FileTools.getFileContet(f, FileTools.FILE_CHARACTER_UTF8);
-						Binding bind = new Binding();
-						GroovyShell gs = new GroovyShell(bind);
-						gs.evaluate(groovyScript);
-						@SuppressWarnings("unchecked")
-						Map<String, String> themecfg = (Map<String, String>) bind.getVariable("_config");
-						String icon = themecfg.get("icon");
-						String website = HttpUtils.getRequestURL(request);
-						String iconpath = website+"/themes/"+themeName+"/"+icon;
-						themecfg.put("icon", iconpath);
-						themecfg.put("path", themeName);
-						list.add(themecfg);
-					}
-				} catch (Exception e) {
-					log.error("", e);
-				}
-			}
-			return list;
 		}
-		
+		return list;
 	}
 
 	

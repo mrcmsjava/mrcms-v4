@@ -23,6 +23,7 @@ import org.marker.mushroom.ext.plugin.PluginContext;
 import org.marker.mushroom.ext.tag.TaglibContext;
 import org.marker.mushroom.ext.tag.impl.*;
 import org.marker.mushroom.utils.ClassPathUtils;
+import org.marker.mushroom.utils.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -51,6 +52,8 @@ public class InitBuilderHolder implements ServletContextAware{
 	@Override
 	public void setServletContext(ServletContext application) {
 		String webRootPath = WebRealPathHolder.REAL_PATH;//网站根目录路径
+		String s = PathUtils.getJarDirectory();
+
 		logger.info("mrcms runtime on path = {}", webRootPath);
 
 		/*
@@ -196,17 +199,7 @@ public class InitBuilderHolder implements ServletContextAware{
 			siteContext.refreshCache();
 		}
 		String pluginsPath = SystemConfig.getInstance().getPluginsPath();
-		String themesPath  = webRootPath+"themes";
-		try {
 
-			// 复制 static 目录下所有 .txt 文件（包括子目录）
-			ClassPathUtils.copyFilesFromClasspath("src/main/modules/", pluginsPath);
-
-//			logger.info("mrcms thems init ...");
-//			ClassPathUtils.copyFilesFromClasspath("themes", themesPath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		if (systemBaseConfig.isInstall()) {
 			String moduleDir =  pluginsPath  ;// 模块目录

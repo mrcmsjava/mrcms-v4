@@ -1,0 +1,51 @@
+<!-- src/main/assembly/package.xml -->
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0
+          http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+
+    <id>release</id>
+    <formats>
+        <format>zip</format>  <!-- 可以改为 tar.gz -->
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <!-- 包含项目根目录下的 config 目录 -->
+        <fileSet>
+            <directory>${project.basedir}/build</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- 包含 target 目录下的 jar 文件 -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/libs</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <!-- 包含特定文件 -->
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <!-- 解压依赖的 jar 包 -->
+<!--?    <dependencySets>-->
+<!--?        <dependencySet>-->
+<!--?            <outputDirectory>/lib</outputDirectory>-->
+<!--?            <scope>runtime</scope>-->
+<!--?            <unpack>false</unpack>-->
+<!--?        </dependencySet>-->
+<!--?    </dependencySets>-->
+</assembly>

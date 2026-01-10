@@ -7,6 +7,7 @@ import org.marker.mushroom.core.config.ConfigDBEngine;
 import org.marker.mushroom.core.config.annotation.IgnoreCopyProperties;
 import org.marker.mushroom.holder.SpringContextHolder;
 import org.marker.mushroom.holder.WebRealPathHolder;
+import org.marker.mushroom.utils.PathUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -171,7 +172,8 @@ public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 	public String getThemesPath(){
         String themesPath = this.properties.getProperty(THEMES_PATH);
         if(StringUtils.isEmpty(themesPath)){
-            return "classpath:/templates/themes";
+			String homePath = PathUtils.getHomePath();
+			themesPath = homePath + File.separator + "themes";
         }
     	return "file:/" + themesPath;
 	}
@@ -186,11 +188,11 @@ public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 	 * @return
 	 */
 	public String getPluginsPath(){
-        String themesPath = this.properties.getProperty(PLUGINS_PATH);
-        if(StringUtils.isEmpty(themesPath)){
-            return WebRealPathHolder.REAL_PATH + "plugins";
+        String pluginPath = this.properties.getProperty(PLUGINS_PATH);
+        if (StringUtils.isEmpty(pluginPath)) {
+            return PathUtils.getHomePath() +File.separator + "plugins";
         }
-		return new File(themesPath).getAbsolutePath();
+		return new File(pluginPath).getAbsolutePath();
 //    	return themesPath;
 	}
 
