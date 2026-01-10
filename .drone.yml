@@ -97,7 +97,7 @@ steps:
         - native
 
 
-  - name: image
+  - name: 构建native镜像
     image: plugins/docker
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     volumes:
@@ -120,7 +120,8 @@ steps:
     when:
       branch:
         - native-release
-  - name: image
+
+  - name: 构建java镜像
     image: plugins/docker
     pull: if-not-exists # 如果镜像不存在则拉取,免去每次都要重新下载
     volumes:
