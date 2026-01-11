@@ -133,7 +133,7 @@ steps:
       mirror: https://dkwe3jow.mirror.aliyuncs.com
       storage_path: /docker
       dockerfile: Dockerfile
-      build_args: JAR_FILE=./target/mrcms.jar
+      build_args: JAR_FILE=./target/app.jar
       username:
         from_secret: registry_nexus_username
       password:

@@ -14,7 +14,7 @@ WORKDIR /app
 
 # maven输出的jar包复制到镜像中
 COPY ./build /app
-COPY ${JAR_FILE} /app/libs
+COPY ${JAR_FILE} /app
 #ADD ./tini /tini
 
 # 日志输出目录
