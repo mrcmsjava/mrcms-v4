@@ -1,4 +1,4 @@
-FROM  nas.mrcms.cn:8082/wuweiit/liberica-openjdk-alpine-musl:17.1
+FROM  nas.mrcms.cn:8082/wuweiit/bellsoft-jdk-apline-musl:17.1
 
 # 构建参数
 ENV JAVA_OPTS -Xms512m -Xmx512m
