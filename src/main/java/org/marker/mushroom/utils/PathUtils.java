@@ -1,5 +1,6 @@
 package org.marker.mushroom.utils;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.marker.mushroom.MrcmsApplication;
 import org.springframework.boot.system.ApplicationHome;
 
@@ -102,7 +103,7 @@ public class PathUtils {
 
         if (parentPath != null) {
             // 重新添加file:前缀
-            return "file://" + parentPath.toString();
+            return "file:"+parentPath.toString();
         } else {
             throw new IllegalArgumentException("无法获取父目录: " + filePath);
         }

@@ -104,7 +104,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         SystemConfig syscfg = SystemConfig.getInstance();
         String themesPath = syscfg.getThemesPath();
         resourceHandlerRegistrationList.add(registry.addResourceHandler("/themes/**")
-            .addResourceLocations("classpath:/templates/", PathUtils.goBackOneDirectory(themesPath))
+            .addResourceLocations(PathUtils.goBackOneDirectory(themesPath))
         );
 
         if (SpringUtils.isDev()) {
