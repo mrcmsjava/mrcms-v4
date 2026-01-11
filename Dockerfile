@@ -27,6 +27,6 @@ RUN   chmod -R 777 /app && \
 #ENTRYPOINT /sbin/tini -- $JAVA_HOME/bin/java -jar $JAVA_OPTS /app/app.jar --spring.profiles.active=$APP_ENV
 
 # 启动命令
-CMD exec /app/mrcms  $JAVA_OPTS --server.port=$SERVER_PORT --spring.profiles.active=$APP_ENV
+#CMD exec /app/mrcms  $JAVA_OPTS --server.port=$SERVER_PORT --spring.profiles.active=$APP_ENV
 
 #
