@@ -175,7 +175,7 @@ public final class SystemConfig extends ConfigDBEngine<SystemConfig> {
 			String homePath = PathUtils.getHomePath();
 			themesPath = homePath + File.separator + "themes";
         }
-    	return "file:/" + themesPath;
+		return new File(themesPath).getAbsolutePath();
 	}
 
 	public Resource getThemesPathResource(){

@@ -92,7 +92,7 @@ public class PathUtils {
      */
     public static String goBackOneDirectory(String filePath) {
         // 移除file:前缀
-        String pathWithoutPrefix = filePath.replaceFirst("^file:/", "");
+        String pathWithoutPrefix = filePath.replaceFirst("^file://", "");
 
         // 使用Path API处理
         Path path = Paths.get(pathWithoutPrefix);
@@ -102,7 +102,7 @@ public class PathUtils {
 
         if (parentPath != null) {
             // 重新添加file:前缀
-            return "file:/" + parentPath.toString();
+            return "file://" + parentPath.toString();
         } else {
             throw new IllegalArgumentException("无法获取父目录: " + filePath);
         }

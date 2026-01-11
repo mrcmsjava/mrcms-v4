@@ -17,6 +17,7 @@ import org.marker.mushroom.utils.FileTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -94,7 +95,7 @@ public class MyCMSTemplate {
 		// 构造模模版路径
 		String  tplFilePath = new StringBuilder(themesPath).append(File.separator).append(tplFile).toString();
 
-		org.springframework.core.io.Resource resource = resourceLoader.getResource(tplFilePath);
+		org.springframework.core.io.Resource resource = new FileSystemResource(tplFilePath);
 
 		
 		logger.error(resource.getURI().toString());

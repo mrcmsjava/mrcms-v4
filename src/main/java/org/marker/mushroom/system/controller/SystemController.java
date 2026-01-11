@@ -313,7 +313,7 @@ public class SystemController extends SupportController {
 	public @ResponseBody Object themes(HttpServletRequest request) throws IOException {
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		String themesPath = config.getThemesPath();
-		themesPath = themesPath.replace("file:/",""); // fix
+		themesPath = themesPath.replace("file://",""); // fix
 		File file = new File(themesPath);
 		String[] filelist = file.list();
 		for(String themeName : filelist ){

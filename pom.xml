@@ -271,32 +271,6 @@
 				</configuration>
 			</plugin>
 
-            <!-- Maven Assembly Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                    <!-- 绑定到 package 阶段 -->
-                    <appendAssemblyId>true</appendAssemblyId>
-                    <!-- 输出目录 -->
-                    <outputDirectory>${project.build.directory}/dist</outputDirectory>
-
-                    <!-- 自定义输出文件名 -->
-                    <finalName>${project.build.finalName}-${project.version}</finalName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
 
             <plugin>
@@ -327,6 +301,40 @@
 
 
     <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+
+                    <!-- Maven Assembly Plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <!-- 绑定到 package 阶段 -->
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <!-- 输出目录 -->
+                            <outputDirectory>${project.build.directory}/dist</outputDirectory>
+
+                            <!-- 自定义输出文件名 -->
+                            <finalName>${project.build.finalName}-${project.version}</finalName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>native</id>
             <build>
