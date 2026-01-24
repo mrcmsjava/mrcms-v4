@@ -1,6 +1,6 @@
 package org.marker.mushroom.config.env;
 
-import org.marker.mushroom.core.config.impl.SystemBaseConfig;
+import org.marker.mushroom.utils.ConfigUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -37,7 +37,7 @@ public class EarlyPropertyLoader implements EnvironmentPostProcessor, Ordered {
     private void loadFromExternalFile(ConfigurableEnvironment environment) {
         try {
             // 读取自定义 properties 文件
-            String configFile = SystemBaseConfig.getCustomConfigFile();
+            String configFile = ConfigUtils.getCustomConfigFile();
             Resource resource = new FileSystemResource(configFile);
             if (resource.exists()) {
                 Properties properties = PropertiesLoaderUtils.loadProperties(resource);

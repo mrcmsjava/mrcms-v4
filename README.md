@@ -84,6 +84,13 @@ java -agentlib:native-image-agent=config-output-dir=./target/native -jar ./targe
 MRCMS并没有特意采集用户信息。
 
 
+### 本地开发
+
+在JVM参数中增加以上配置。
+```
+-Dspring.profiles.active=dev -Dmrcms.demo=false -Dmrcms.install=true
+```
+
 ### docker 部署环境
 
 

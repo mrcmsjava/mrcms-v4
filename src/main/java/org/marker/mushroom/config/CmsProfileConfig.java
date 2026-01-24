@@ -2,6 +2,7 @@ package org.marker.mushroom.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.core.config.impl.SystemBaseConfig;
+import org.marker.mushroom.utils.ConfigUtils;
 import org.marker.mushroom.utils.PathUtils;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class CmsProfileConfig {
     }
 
     /**
-     * 系统基本配置
+     * 系统基本配置工厂
      * @return
      * @throws IOException
      */
@@ -68,9 +69,9 @@ public class CmsProfileConfig {
         factoryBean.setIgnoreResourceNotFound(true); // 忽略配置不存在
 
         List<Resource> resources = new ArrayList();
-        resources.add(0, new ClassPathResource("/config.properties"));
+        resources.add(0, new ClassPathResource("config.properties"));
         // 此处加载与Config引擎加载有所区别，基于spring PropertiesFactoryBean加载的
-        String customConfigFile = SystemBaseConfig.getCustomConfigFile();
+        String customConfigFile = ConfigUtils.getCustomConfigFile();
         if (StringUtils.isNotBlank(customConfigFile)) {
             resources.add(1, new FileSystemResource(customConfigFile)); // 优先级最高
         }

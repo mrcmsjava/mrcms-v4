@@ -103,7 +103,7 @@ public class PathUtils {
 
         if (parentPath != null) {
             // 重新添加file:前缀
-            return "file:"+parentPath.toString();
+            return parentPath.toString();
         } else {
             throw new IllegalArgumentException("无法获取父目录: " + filePath);
         }

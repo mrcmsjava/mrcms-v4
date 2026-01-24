@@ -23,17 +23,11 @@ public class SystemBaseConfig extends ConfigEngine {
 	public static final String DB_TABLE_PREFIX = "mushroom.db.prefix";
 
 	/**
-	 * 默认的系统基础配置文件
-	 */
-	public static final String DEFAULT_CUSTOM_CONFIG_FILE = "/etc/mrcms/config.properties";
-
-
-	/**
 	 * 默认构造方法
 	 * @throws IOException 
 	 * */
 	public SystemBaseConfig() {
-		super(getCustomConfigFile());
+		this.properties = SpringContextHolder.getBean("configProperties");
 	}
 
 	
@@ -45,38 +39,19 @@ public class SystemBaseConfig extends ConfigEngine {
 	}
 
 	/**
-	 * 获取自定义配置文件
-	 * @return
-	 */
-	public static String getCustomConfigFile(){
-		String baseConfigFile =  System.getProperty("mrcms.config");
-		return StringUtil.isBlank(baseConfigFile)? PathUtils.getHomePath() + File.separator+ "conf"+ File.separator+"config.properties": baseConfigFile;
-	}
-	
-	/**
 	 * 获取表前缀
 	 * */
 	public String getPrefix(){
-		Properties properties = SpringContextHolder.getBean("configProperties");
-		return  properties.getProperty(DB_TABLE_PREFIX,"mr_");
+		return this.getProperty(DB_TABLE_PREFIX,"mr_");
 		
 	}
-
-
-    /**
-     * 启动的时候在InitBuilderHolder中初始化。
-     * 调用
-     */
-    public void init() {
-        this.properties = SpringContextHolder.getBean("configProperties");
-    }
 
 	/**
 	 * 是否安装
 	 * @return boolean
 	 */
 	public boolean isInstall() {
-		String isInstall = (String) this.properties.get("mrcms.install");
+		String isInstall = (String) this.getProperty("mrcms.install", "false");
 		logger.info("mrcms.install = {}", isInstall);
 		return Boolean.parseBoolean(isInstall);
 	}

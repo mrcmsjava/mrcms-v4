@@ -1,39 +1,32 @@
 package org.marker.mushroom.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.marker.mushroom.core.resource.ThemesPathResourceResolver;
 import org.marker.mushroom.core.config.impl.SystemConfig;
 import org.marker.mushroom.interceptor.RequestParamsInterceptor;
 import org.marker.mushroom.interceptor.SignInterceptor;
-import org.marker.mushroom.utils.PathUtils;
 import org.marker.mushroom.utils.SpringUtils;
-import org.marker.urlrewrite.freemarker.FrontURLRewriteMethodModel;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import static com.alibaba.fastjson.serializer.SerializerFeature.WriteMapNullValue;
 import static com.alibaba.fastjson.serializer.SerializerFeature.WriteNullNumberAsZero;
@@ -103,9 +96,14 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         // 处理多重主题目录静态资源
         SystemConfig syscfg = SystemConfig.getInstance();
         String themesPath = syscfg.getThemesPath();
-        resourceHandlerRegistrationList.add(registry.addResourceHandler("/themes/**")
-            .addResourceLocations(PathUtils.goBackOneDirectory(themesPath))
-        );
+        ResourceHandlerRegistration themesResourceHandlerRegistration = registry
+            .addResourceHandler("/themes/**") ;
+        // 自定义解析器
+        themesResourceHandlerRegistration
+            .resourceChain(false)
+            .addResolver(new ThemesPathResourceResolver());
+
+        resourceHandlerRegistrationList.add(themesResourceHandlerRegistration);
 
         if (SpringUtils.isDev()) {
             resourceHandlerRegistrationList.forEach(item->{

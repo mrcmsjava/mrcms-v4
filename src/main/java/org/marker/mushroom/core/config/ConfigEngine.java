@@ -1,6 +1,8 @@
 package org.marker.mushroom.core.config;
 
+import org.apache.commons.lang.StringUtils;
 import org.marker.mushroom.holder.WebRealPathHolder;
+import org.marker.mushroom.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,25 @@ public abstract class ConfigEngine implements IConfig {
 	 */
 	@Override
 	public String get(String key) {
-		return this.properties.getProperty(key);
+		return getProperty(key, null);
+	}
+
+
+	/**
+	 * 获取配置key 对应的val
+	 * @param key  键
+	 * @param defaultVal 默认值
+	 * @return
+	 */
+	protected String getProperty(String key, String defaultVal) {
+		// 优先使用JVM参数
+		String val = System.getProperty(key,defaultVal);
+		if(StringUtils.isNotBlank(val)){
+			return val;
+		}
+		// 降级到本地properties读取
+		val = this.properties.getProperty(key,defaultVal);
+		return val;
 	}
 
 	
@@ -169,6 +189,7 @@ public abstract class ConfigEngine implements IConfig {
     public void setProfile(String profile) {
         this.profile = profile;
     }
+
 }
 
 
