@@ -79,7 +79,7 @@ public abstract class ConfigEngine implements IConfig {
 	 */
 	protected String getProperty(String key, String defaultVal) {
 		// 优先使用JVM参数
-		String val = System.getProperty(key,defaultVal);
+		String val = System.getProperty(key);
 		if(StringUtils.isNotBlank(val)){
 			return val;
 		}
